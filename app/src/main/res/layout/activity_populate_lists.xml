@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#efefef"
+    tools:context=".PopulateListsActivity">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+    <EditText
+        android:id="@+id/etNumOfRes"
+        android:hint="num of results"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="50dp"
+        android:layout_marginLeft="50dp" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+
+    <RadioGroup
+        android:id="@+id/rgPersonTYPE"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="50dp"
+        android:layout_marginLeft="50dp">
+
+        <RadioButton
+            android:id="@+id/Anxious"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Anxious"
+            android:textSize="30sp" />
+
+        <RadioButton
+            android:id="@+id/Paranoid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Paranoid"
+            android:textSize="30sp" />
+
+        <RadioButton
+            android:id="@+id/Histrionic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Histrionic"
+            android:textSize="30sp" />
+
+        <RadioButton
+            android:id="@+id/Obsessive"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Obsessive"
+            android:textSize="30sp" />
+
+        <RadioButton
+            android:id="@+id/Narcissist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Narcissist"
+            android:textSize="30sp" />
+
+        <RadioButton
+            android:id="@+id/Schizoid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Schizoid"
+            android:textSize="30sp" />
+
+        <RadioButton
+            android:id="@+id/Depressive"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Depressive"
+            android:textSize="30sp" />
+
+        <RadioButton
+            android:id="@+id/Dependent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dependent"
+            android:textSize="30sp" />
+
+    </RadioGroup>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+
+    <Button
+        android:id="@+id/admin_gen_list"
+        android:text="generate list"
+        android:textSize="40sp"
+        android:layout_width="match_parent"
+        android:layout_marginRight="25dp"
+        android:layout_marginLeft="25dp"
+        android:layout_height="wrap_content" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+</LinearLayout>

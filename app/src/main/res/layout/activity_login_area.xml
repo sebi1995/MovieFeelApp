@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_login_area"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/appBgColor"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_vertical_margin"
+    tools:context="com.example.zdroa.myapplication.LoginAreaActivity">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Welcome"
+        android:textAlignment="center"
+        android:textColor="#000"
+        android:textSize="40sp" />
+
+    <TextView android:id="@+id/login_area_tv_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="hellow world"
+        android:textSize="18sp"
+        android:textAlignment="center"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/login_area_b_movies"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="All Movies" />
+
+        <Button
+            android:id="@+id/login_area_b_watchedlist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="My watched moves" />
+
+        <Button
+            android:id="@+id/login_area_b_logout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:onClick="login_area_logout"
+            android:text="logout" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="100dp"/>
+
+        <Button android:id="@+id/login_area_b_sad"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="i'm feeling sad"
+            android:enabled="false"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:text="Coming soon..."/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/bGoToPopulateLists"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="populate lists"
+        android:visibility="gone" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+</LinearLayout>
