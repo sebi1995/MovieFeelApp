@@ -155,7 +155,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Genre/s: "
+                android:text="Genres: "
                 android:textAlignment="center"
                 android:textSize="16sp" />
 
@@ -172,7 +172,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Production Countrie/s: "
+                android:text="Production Countries: "
                 android:textAlignment="center"
                 android:textSize="16sp" />
 
@@ -189,7 +189,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Spoken Language/s: "
+                android:text="Spoken Languages: "
                 android:textAlignment="center"
                 android:textSize="16sp" />
 

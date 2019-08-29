@@ -12,7 +12,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".TestTestActivity"></activity>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleInstance"

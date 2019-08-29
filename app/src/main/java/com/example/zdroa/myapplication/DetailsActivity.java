@@ -4,40 +4,41 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Space;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.zdroa.myapplication.aid.GsonHandler;
-import com.example.zdroa.myapplication.models.MovieModelWithYoutubeLinks;
-import com.example.zdroa.myapplication.models.moviesubmodels.Genre;
-import com.example.zdroa.myapplication.models.moviesubmodels.ProductionCountry;
-import com.example.zdroa.myapplication.models.moviesubmodels.SpokenLanguage;
-import com.example.zdroa.myapplication.models.moviesubmodels.YoutubeVideos;
-import com.example.zdroa.myapplication.session.SessionHandler;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
+import com.example.zdroa.myapplication.aid.ConvertDbIdsToHashMapII;
+import com.example.zdroa.myapplication.requests.AddToWatchedList;
+import com.example.zdroa.myapplication.requests.GetWatchedList;
+import com.example.zdroa.myapplication.session.Session_Class;
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class DetailsActivity extends AppCompatActivity {
 
-    private static String movie_id;
-    private static String poster;
-    //    private static boolean watched = false;
-    private static YoutubeVideos youtube_links;
-    private TextView movieWatched;
-    private TextView tvNoTrailersToShowMessage;
-    private ImageView trailer1;
-    private ImageView trailer2;
+    private static String movie_id, poster;
+    private static boolean watched = false;
+    private static ArrayList<String> youtube_links;
+    private TextView movieWatched, noTrailersToShow;
+    private ImageView trailer1, trailer2;
 
     private String userID;
 
-    private static SessionHandler sessionHandler;
+    private static Session_Class session_class;
 
     private Intent intent;
 
@@ -49,148 +50,366 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
         fa = this;
 
-        intent = getIntent();
+        intent = this.getIntent();
+        session_class = new Session_Class(getApplicationContext());
+        userID = session_class.getID();
 
-        movieWatched = findViewById(R.id.details_tv_favourite);
+        movieWatched = (TextView) findViewById(R.id.details_tv_favourite);
         movieWatched.setTextColor(Color.RED);
 
-        tvNoTrailersToShowMessage = findViewById(R.id.details_tv_no_trailers);
+        noTrailersToShow = (TextView) findViewById(R.id.details_tv_no_trailers);
 
-        trailer1 = findViewById(R.id.details_iv_trailer_1);
-        trailer2 = findViewById(R.id.details_iv_trailer_2);
+        trailer1 = (ImageView) findViewById(R.id.details_iv_trailer_1);
+        trailer2 = (ImageView) findViewById(R.id.details_iv_trailer_2);
 
-        MovieModelWithYoutubeLinks movieModel = new GsonHandler<MovieModelWithYoutubeLinks>().stringToObject(intent.getStringExtra("movieModelWYTLinks"), MovieModelWithYoutubeLinks.class);
+        new getWatchedListFromDB().execute();
+
+        poster = intent.getStringExtra("poster");
+        movie_id = intent.getStringExtra("id");
+        youtube_links = intent.getStringArrayListExtra("youtube_links");
 
 
-        poster = movieModel.getPosterPath();
-        movie_id = movieModel.getId().toString();
-        youtube_links = movieModel.getYoutubeVideos();
+        setTextViews(intent, "title", R.id.details_tv_movie_title);
+        setTextViews(intent, "status", R.id.details_tv_release_status);
+        setTextViews(intent, "release_date", R.id.details_tv_release_date);
+        setTextViews(intent, "adult", R.id.details_tv_adult);
+        setTextViews(intent, "vote_average", R.id.details_tv_vote_average);
+        setTextViews(intent, "runtime", R.id.details_tv_runtime);
+        setTextViews(intent, "original_language", R.id.details_tv_original_language);
+        setTextViews(intent, "overview", R.id.details_tv_overview);
 
 
-        ((TextView) findViewById(R.id.details_tv_movie_title)).setText(movieModel.getTitle());
-        ((TextView) findViewById(R.id.details_tv_release_status)).setText("Release Status: " + movieModel.getStatus());
-        ((TextView) findViewById(R.id.details_tv_release_date)).setText(movieModel.getReleaseDate());
-        ((TextView) findViewById(R.id.details_tv_adult)).setText(movieModel.getAdult().toString());
-        ((TextView) findViewById(R.id.details_tv_vote_average)).setText("Rating: " + movieModel.getVoteAverage() + "/" + "10");
-        ((TextView) findViewById(R.id.details_tv_runtime)).setText("Runtime: " + movieModel.getRuntime() + " minutes");
-        Locale loc = new Locale(movieModel.getOriginalLanguage());
-        ((TextView) findViewById(R.id.details_tv_original_language)).setText("Original Language: " + loc.getDisplayLanguage(loc));
-        ((TextView) findViewById(R.id.details_tv_overview)).setText(movieModel.getOverview());
+        populateFromArrayLists(intent, "genres", R.id.details_tv_genres);
+        populateFromArrayLists(intent, "production_countries", R.id.details_tv_production_countries);
+        populateFromArrayLists(intent, "spoken_languages", R.id.details_tv_spoken_languages);
 
-        populateGenres(movieModel.getGenres());
-        populateProductionCountries(movieModel.getProductionCountries());
-        populateSpokenLanguages(movieModel.getSpokenLanguages());
-        populateVideos(movieModel.getYoutubeVideos());
+        YouTubeChecks();
+        populatePosters();
 
-        Picasso.with(this)
-                .load("http://image.tmdb.org/t/p/w300/" + movieModel.getPosterPath())
-                .into((ImageView) findViewById(R.id.details_iv_poster));
     }
 
-    private void populateSpokenLanguages(List<SpokenLanguage> spokenLanguages) {
-        if (!spokenLanguages.isEmpty()) {
-            TextView textView = findViewById(R.id.details_tv_spoken_languages);
-            String name = spokenLanguages.get(0).getName();
-            int size = spokenLanguages.size();
-            if (size == 1) {
-                textView.setText("Genre: " + name);
-            } else if (size > 1) {
-                textView.setText("Genres: " + name);
-                for (int i = 1; i < size; i++) {
-                    textView.append(", " + spokenLanguages.get(i).getName());
-                }
-            } else {
-                textView.setText(R.string.INFORMATION_NOT_AVAILABLE);
-            }
-        }
-    }
-
-    private void populateProductionCountries(List<ProductionCountry> productionCountries) {
-        if (!productionCountries.isEmpty()) {
-            TextView textView = findViewById(R.id.details_tv_production_countries);
-            String name = productionCountries.get(0).getName();
-            int size = productionCountries.size();
-            if (size == 1) {
-                textView.setText("Production Country: " + name);
-            } else if (size > 1) {
-                textView.setText("Production Countries: " + name);
-                for (int i = 1; i < size; i++) {
-                    textView.append(", " + productionCountries.get(i).getName());
-                }
-            } else {
-                textView.setText(R.string.INFORMATION_NOT_AVAILABLE);
-            }
-        }
-    }
-
-    private void populateGenres(List<Genre> genres) {
-        if (!genres.isEmpty()) {
-            TextView textView = findViewById(R.id.details_tv_genres);
-            String name = genres.get(0).getName();
-            int size = genres.size();
-            if (size == 1) {
-                textView.setText("Spoken Language: " + name);
-            } else if (size > 1) {
-                textView.setText("Spoken Languages: " + name);
-                for (int i = 1; i < size; i++) {
-                    textView.append(", " + genres.get(i).getName());
-                }
-            } else {
-                textView.setText(R.string.INFORMATION_NOT_AVAILABLE);
-            }
-        }
-    }
-
-    private void populateVideos(YoutubeVideos youtubeVideos) {
-
-        Space space = findViewById(R.id.details_space_between_trailers);
-
-        boolean firstVideoIsThere = videoIsThere(youtubeVideos, 0);
-        boolean secondVideoIsThere = videoIsThere(youtubeVideos, 1);
-
-        if (firstVideoIsThere) {
-            String key = youtubeVideos.getResults().get(0).getKey();
-            trailer1.setOnClickListener(view -> {
-                Uri uri = Uri.parse("http://www.youtube.com/watch?v=" + key);
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(browserIntent);
-            });
-            Picasso.with(this)
-                    .load("http://img.youtube.com/vi/" + key + "/default.jpg")
-                    .into(trailer1);
-        } else {
+    private void YouTubeChecks() {
+        Space space = (Space) findViewById(R.id.details_space_between_trailers);
+        if (youtube_links.get(0).contains("null")) {
             trailer1.setVisibility(View.GONE);
             space.setVisibility(View.GONE);
-        }
 
-        if (secondVideoIsThere) {
-            String key = youtubeVideos.getResults().get(1).getKey();
-            trailer2.setOnClickListener(view -> {
-                Uri uri = Uri.parse("http://www.youtube.com/watch?v=" + key);
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(browserIntent);
+        } else {
+            trailer1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com" +
+                            "/watch?v=" + youtube_links.get(0)));
+                    startActivity(browserIntent);
+                }
             });
             Picasso.with(this)
-                    .load("http://img.youtube.com/vi/" + key + "/default.jpg")
-                    .into(trailer2);
-        } else {
+                    .load("http://img.youtube.com/vi/" + youtube_links.get(0) + "/default.jpg")
+                    .into(trailer1);
+        }
+
+        if (youtube_links.get(1).contains("null")) {
             trailer2.setVisibility(View.GONE);
             space.setVisibility(View.GONE);
+        } else {
+            trailer2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com" +
+                            "/watch?v=" + youtube_links.get(1)));
+                    startActivity(browserIntent);
+                }
+            });
+            Picasso.with(this)
+                    .load("http://img.youtube.com/vi/" + youtube_links.get(1) + "/default.jpg")
+                    .into(trailer2);
         }
 
-        if (!firstVideoIsThere && !secondVideoIsThere) {
-            tvNoTrailersToShowMessage.setVisibility(View.VISIBLE);
+        if (youtube_links.get(0).contains("null") && youtube_links.get(1).contains("null")) {
+            noTrailersToShow.setVisibility(View.VISIBLE);
             space.setVisibility(View.GONE);
-        }
 
+        }
     }
 
-    private boolean videoIsThere(YoutubeVideos youtubeVideos, int position) {
-        if (youtubeVideos == null || youtubeVideos.getResults() == null || youtubeVideos.getResults().isEmpty()) {
-            return false;
+    private void populatePosters() {
+        if (intent != null && intent.hasExtra("poster")) {
+            poster = intent.getStringExtra("poster");
+            ImageView iv = (ImageView) findViewById(R.id.details_iv_poster);
+
+            Picasso.with(this)
+                    .load("http://image.tmdb.org/t/p/w300/" + poster)
+                    .into(iv);
+
         }
-        return position < youtubeVideos.getResults().size();
+    }
+
+    private void populateFromArrayLists(Intent intent, String putExtraString, int resource) {
+        ArrayList<String> list = new ArrayList<>(intent.getStringArrayListExtra(putExtraString));
+        TextView tv = (TextView) findViewById(resource);
+
+        if (list.size() != 0) {
+            for (int i = 0; i < list.size(); i++) {
+                if (list.size() == 1) {
+                    tv.append(list.get(i));
+                } else {
+                    switch (i) {
+                        case 0:
+                            tv.append(list.get(0));
+                            break;
+                        default:
+                            tv.append(", " + list.get(i));
+                    }
+                }
+            }
+        } else tv.append("no available information.");
+    }
+
+    private void setTextViews(Intent intent, String putextraString, int resource) {
+        TextView tv = (TextView) findViewById(resource);
+
+        if (intent != null && intent.hasExtra(putextraString) && intent.getStringExtra(putextraString).length() != 0) {
+            String staticString = intent.getStringExtra(putextraString);
+
+
+            switch (putextraString) {
+                case "title":
+                    tv.setText(staticString);
+                    break;
+                case "status":
+                    tv.setText("Release Status: " + staticString);
+                    break;
+                case "release_date":
+                    String day = staticString.substring(staticString.length() - 2, staticString.length());
+                    String month = staticString.substring(staticString.length() - 5, staticString.length() - 3);
+                    String year = staticString.substring(0, 4);
+                    staticString = day + "/" + month + "/" + year;
+                    staticString = "Release Date: " + staticString;
+                    tv.setText(staticString);
+                    break;
+                case "adult":
+                    if (staticString == "true") {
+                        tv.setText(" Yes");
+                    } else {
+                        tv.setText(" No");
+                    }
+                    break;
+                case "vote_average":
+                    tv.setText("Rating: " + staticString + "/" + "10");
+                    break;
+                case "runtime":
+                    tv.setText("Runtime: " + staticString + " Minutes");
+                    break;
+                case "original_language":
+                    Locale loc = new Locale(staticString);
+                    String name = loc.getDisplayLanguage(loc);
+                    tv.setText("Original Language: " + name);
+                    break;
+                case "overview":
+                    tv.setText(staticString);
+                    break;
+            }
+        } else tv.setText("N/A");
+    }
+
+    public void CheckIfAddedToWatched(View v) {
+        if (!watched) {
+            new setWatchedList().execute();
+        } else {
+            new removeFromWatchedList().execute();
+        }
+    }
+
+    private class getWatchedListFromDB extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            Response.Listener<String> responseListener = new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        JSONObject jsonResponse = new JSONObject(response);
+                        boolean success = jsonResponse.getBoolean("success");
+
+                        if (success) {
+                            String id = jsonResponse.getString("watched_list");
+                            session_class.setVar("watched_list", id, null);
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            GetWatchedList getWatchedList = new GetWatchedList(userID, responseListener);
+            RequestQueue queue = Volley.newRequestQueue(fa);
+            queue.add(getWatchedList);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            HashMap<Integer, Integer> hashMap = new HashMap<>(getStringOfIdsFromDB(session_class.getWatchedList()));
+            if (hashMap.containsValue(Integer.parseInt(movie_id))) {
+                watched = true;
+                movieWatched.setText("REMOVE FROM WATCHED LIST");
+                movieWatched.setTextColor(Color.GREEN);
+            } else {
+                watched = false;
+                movieWatched.setText("ADD TO WATCHED LIST");
+                movieWatched.setTextColor(Color.RED);
+            }
+        }
+    }
+
+    private class setWatchedList extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            String movieId = movie_id;
+            String watchedList = session_class.getWatchedList();
+
+            switch (movieId.length()) {
+                case 1:
+                    movieId = "0000" + movieId;
+                    break;
+                case 2:
+                    movieId = "000" + movieId;
+                    break;
+                case 3:
+                    movieId = "00" + movieId;
+                    break;
+                case 4:
+                    movieId = "0" + movieId;
+                    break;
+            }
+
+            watchedList += movieId;
+
+            Response.Listener<String> responseListener = new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        JSONObject jsonResponse = new JSONObject(response);
+                        boolean success = jsonResponse.getBoolean("success");
+
+                        if (success) {
+                            String id = jsonResponse.getString("watched_list");
+                            session_class.setVar("watched_list", id, null);
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            AddToWatchedList addToWatchedList = new AddToWatchedList(userID, watchedList, responseListener);
+            RequestQueue queue = Volley.newRequestQueue(fa);
+            queue.add(addToWatchedList);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            watched = true;
+            movieWatched.setText("REMOVE FROM WATCHED LIST");
+            movieWatched.setTextColor(Color.GREEN);
+        }
+    }
+
+    private class removeFromWatchedList extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            String QSTRING = null;
+
+            Response.Listener<String> responseListener = new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        JSONObject jsonResponse = new JSONObject(response);
+                        boolean success = jsonResponse.getBoolean("success");
+
+                        if (success) {
+                            String watchedList = jsonResponse.getString("watched_list");
+                            session_class.setVar("watched_list", watchedList, null);
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+
+            String s = movie_id;//12
+            String watchedList = session_class.getWatchedList();
+
+            switch (s.length()) {
+                case 1:
+                    s = "0000" + s;
+                    break;
+                case 2:
+                    s = "000" + s;
+                    break;
+                case 3:
+                    s = "00" + s;
+                    break;
+                case 4:
+                    s = "0" + s;
+                    break;
+            }
+
+            //s = 00012
+            HashMap<Integer, Integer> map = new HashMap<>(new ConvertDbIdsToHashMapII().getHasMap(watchedList));
+
+            if (map.containsValue(Integer.parseInt(movie_id))) {
+                QSTRING = watchedList.replace(s, "");
+                AddToWatchedList addToWatchedList = new AddToWatchedList(userID, QSTRING, responseListener);
+                RequestQueue queue = Volley.newRequestQueue(fa);
+                queue.add(addToWatchedList);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            watched = false;
+            movieWatched.setText("ADD TO WATCHED LIST");
+            movieWatched.setTextColor(Color.RED);
+        }
     }
 
 
+    private HashMap<Integer, Integer> getStringOfIdsFromDB(String STRING_LIST_OF_IDS) {
+        //String s = "00001, 00002, 00003, 00004, 00005, 00006, 00007, 00008, 00009, 00010, 00011, 00012, 00013, 00100, 01000, 01000, 01212, 10000, 23000";
+        String s = STRING_LIST_OF_IDS;
+        s = s.replace(",", "");
+        s = s.replace(" ", "");
+
+        HashMap<Integer, Integer> map = new HashMap<>();
+
+        for (int i = 0; i < s.length() / 5; i++) {
+            String s_s = s.substring(i * 5, (i * 5) + 5);
+
+            if ("0000".equals(s_s.substring(0, 4))) {
+                map.put(i, Integer.parseInt(s_s.substring(4, 5)));
+            } else if ("000".equals(s_s.substring(0, 3))) {
+                map.put(i, Integer.parseInt(s_s.substring(3, 5)));
+            } else if ("00".equals(s_s.substring(0, 2))) {
+                map.put(i, Integer.parseInt(s_s.substring(2, 5)));
+            } else if ("0".equals(s_s.substring(0, 1))) {
+                map.put(i, Integer.parseInt(s_s.substring(1, 5)));
+            } else map.put(i, Integer.parseInt(s_s));
+        }
+        return map;
+    }
 }

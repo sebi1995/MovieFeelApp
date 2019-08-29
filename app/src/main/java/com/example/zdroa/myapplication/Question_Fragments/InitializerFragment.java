@@ -1,17 +1,16 @@
 package com.example.zdroa.myapplication.Question_Fragments;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.fragment.app.Fragment;
-
 import com.example.zdroa.myapplication.QuestionnaireActivity;
 import com.example.zdroa.myapplication.R;
-import com.example.zdroa.myapplication.session.SessionHandler;
+import com.example.zdroa.myapplication.session.Session_Class;
 
 public class InitializerFragment extends Fragment {
 
@@ -28,10 +27,10 @@ public class InitializerFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_initializer_questions, container, false);
 
-        SessionHandler sessionHandler = new SessionHandler(getContext());
+        Session_Class session = new Session_Class(getContext());
 
-        uFirstName = sessionHandler.getUserFirstname();
-        uSurname = sessionHandler.getUserSurname();
+        uFirstName = session.getFirstname();
+        uSurname = session.getSurname();
 
         ImageView imageView = (ImageView) view.findViewById(R.id.fragment_initializer_iv_cancel);
         imageView.setOnClickListener(new View.OnClickListener() {

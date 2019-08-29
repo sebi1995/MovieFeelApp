@@ -9,27 +9,33 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.zdroa.myapplication.models.MovieModelWithYoutubeLinks;
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
+import java.util.HashMap;
 
 class ListViewAdaptor extends BaseAdapter {
 
-    private final List<MovieModelWithYoutubeLinks> movies;
     private Context mContext;
-    private String posterLinkEnding;
-    private String movieTitle;
-    private String movieOverview;
+    private HashMap<Integer, String> urls, titles, movie_overview;
+    private HashMap<Integer, Boolean> watched;
 
-    ListViewAdaptor(Context context, List<MovieModelWithYoutubeLinks> movies) {
+
+    ListViewAdaptor(Context context,
+                    HashMap<Integer, String> URLS,
+                    HashMap<Integer, String> TITLES,
+                    HashMap<Integer, String> OVERVIEW,
+                    HashMap<Integer, Boolean> watchedList) {
+
         mContext = context;
-        this.movies = movies;
+        urls = URLS;
+        titles = TITLES;
+        movie_overview = OVERVIEW;
+        watched = watchedList;
     }
 
     @Override
     public int getCount() {
-        return movies.size();
+        return urls.size();
     }
 
     @Override
@@ -49,44 +55,35 @@ class ListViewAdaptor extends BaseAdapter {
         if (convertView == null) {
             convertView = View.inflate(mContext, R.layout.results_layout, null);
         }
+        ImageView imageView = (ImageView) convertView.findViewById(R.id.ivPosters);
+        TextView tvTitle = (TextView) convertView.findViewById(R.id.results_layout_tv_movie_name);
+        TextView tvOverview = (TextView) convertView.findViewById(R.id.results_layout_tv_overview);
 
-        ImageView imageView = convertView.findViewById(R.id.ivPosters);
-        TextView tvTitle = convertView.findViewById(R.id.results_layout_tv_movie_name);
-        TextView tvOverview = convertView.findViewById(R.id.results_layout_tv_overview);
+        String link_end = urls.get(position);
+        String sTitle = titles.get(position);
+        String sOverview = movie_overview.get(position);
+        if (sOverview != null && sTitle != null && link_end != null) {
 
-        MovieModelWithYoutubeLinks movieFromList = movies.get(position);
-        if (movieFromList == null) {
-            return convertView;
+            Drawable d = mContext.getResources().getDrawable(R.drawable.place_holder_img);
+            Picasso.with(mContext)
+                    .load("http://image.tmdb.org/t/p/w185" + link_end)
+                    .placeholder(d)
+                    .into(imageView);
+
+            tvTitle.setTextColor(Color.BLACK);
+            if (!watched.get(position)){
+                tvTitle.setText(sTitle);
+            } else {
+                tvTitle.setText("WATCHED: " + sTitle);
+                tvTitle.setTextColor(Color.RED);
+            }
+
+
+            if (sOverview.length() == 0) {
+                tvOverview.setText("No available information");
+            } else tvOverview.setText(sOverview);
         }
-
-
-        if (aNullParam(movieFromList)) return convertView;
-
-        Drawable drawable = mContext.getResources().getDrawable(R.drawable.place_holder_img);
-        Picasso.with(mContext)
-                .load("http://image.tmdb.org/t/p/w185" + posterLinkEnding)
-                .placeholder(drawable)
-                .into(imageView);
-
-        tvTitle.setTextColor(Color.BLACK);
-        tvTitle.setText(movieTitle);
-
-        if (movieOverview.length() == 0) {
-            tvOverview.setText("No available information");
-        } else {
-            tvOverview.setText(movieOverview);
-        }
-
         return convertView;
 
-    }
-
-    private boolean aNullParam(MovieModelWithYoutubeLinks movieFromList) {
-        this.posterLinkEnding = movieFromList.getPosterPath();
-        this.movieTitle = movieFromList.getTitle();
-        this.movieOverview = movieFromList.getOverview();
-        return this.posterLinkEnding == null &&
-                this.movieTitle == null &&
-                this.movieOverview == null;
     }
 }
