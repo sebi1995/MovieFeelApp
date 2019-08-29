@@ -2,9 +2,10 @@ package com.example.zdroa.myapplication;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import com.example.zdroa.myapplication.communicators.FragmentCommunicator;
 

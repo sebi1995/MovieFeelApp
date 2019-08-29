@@ -1,39 +1,40 @@
 package com.example.zdroa.myapplication;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.zdroa.myapplication.aid.NetworkCheck;
-import com.example.zdroa.myapplication.session.Session_Class;
+import com.example.zdroa.myapplication.session.SessionHandler;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static Activity fa;
-    private Session_Class session;
+    private SessionHandler sessionHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        fa = this;
 
-        session = new Session_Class(getApplicationContext());
+        finish();
+//        startActivity(new Intent(this, RegisterActivity.class));
+        startActivity(new Intent(this, PopulateListsActivity.class));
 
-        if (session.getID() != null) {
-            fa.finish();
-            startActivity(new Intent(fa, LoginAreaActivity.class));
-        }
+//        sessionHandler = new SessionHandler(getApplicationContext());
+//
+//        if (sessionHandler.getID() != null) {
+//            finish();
+//            startActivity(new Intent(this, LoginAreaActivity.class));
+//        }
 
     }
 
     public void main_onButtonClick(View v) {
-        if (new NetworkCheck().NetworkCheck(fa)) {
+        if (NetworkCheck.check(this)) {
             switch (v.getId()) {
-
                 case R.id.main_b_gotoLoginActivity:
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));
                     break;
@@ -42,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(new Intent(MainActivity.this, RegisterActivity.class));
                     break;
             }
-        } else Toast.makeText(fa, "No internet connection detected.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "No internet connection detected.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

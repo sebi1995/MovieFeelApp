@@ -4,24 +4,25 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.zdroa.myapplication.requests.GetIDSFromDB;
 import com.example.zdroa.myapplication.requests.GetWatchedList;
-import com.example.zdroa.myapplication.session.Session_Class;
+import com.example.zdroa.myapplication.session.SessionHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LoginAreaActivity extends AppCompatActivity {
 
-    private Session_Class session;
+    private SessionHandler sessionHandler;
     private String pType;
     private String userID;
     private getIDSFromDB getIDSFromDB = new getIDSFromDB();
@@ -36,12 +37,12 @@ public class LoginAreaActivity extends AppCompatActivity {
 
         fa = this;
 
-        session = new Session_Class(getApplicationContext());
-        pType = session.getUserType();
-        userID = session.getID();
+        sessionHandler = new SessionHandler(getApplicationContext());
+        pType = sessionHandler.getUserType();
+        userID = sessionHandler.getID();
 
         TextView textView = (TextView) findViewById(R.id.login_area_tv_name);
-        textView.setText(session.getTitle() + " " + session.getFirstname() + " " + session.getSurname());
+        textView.setText(sessionHandler.getUserTitle() + " " + sessionHandler.getUserFirstname() + " " + sessionHandler.getUserSurname());
 
 
         if (pType == null) {
@@ -51,7 +52,7 @@ public class LoginAreaActivity extends AppCompatActivity {
             getIDSFromDB.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
             getWatchedListFromDB.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         }
-        if (session.getUsername().equals("admin")) {
+        if (sessionHandler.getUsername().equals("admin")) {
             Button gotopop = (Button) findViewById(R.id.bGoToPopulateLists);
             gotopop.setVisibility(View.VISIBLE);
             gotopop.setOnClickListener(new View.OnClickListener() {
@@ -81,7 +82,7 @@ public class LoginAreaActivity extends AppCompatActivity {
     }
 
     public void login_area_logout(View v) {
-        session.clearAll();
+        sessionHandler.clearAll();
         finish();
         startActivity(new Intent(fa, MainActivity.class));
     }
@@ -100,7 +101,8 @@ public class LoginAreaActivity extends AppCompatActivity {
 
                         if (success) {
                             String id = jsonResponse.getString("id");
-                            session.setVar("ids_list", id, null);
+//                            sessionHandler.set("ids_list", id, null);
+                            // TODO: 25/08/2019 set ids list
                         }
 
                     } catch (JSONException e) {
@@ -134,7 +136,8 @@ public class LoginAreaActivity extends AppCompatActivity {
 
                         if (success) {
                             String id = jsonResponse.getString("watched_list");
-                            session.setVar("watched_list", id, null);
+//                            sessionHandler.setVar("watched_list", id, null);
+                            // TODO: 25/08/2019 set watched list
                         }
 
                     } catch (JSONException e) {

@@ -3,14 +3,15 @@ package com.example.zdroa.myapplication.Question_Fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -19,7 +20,7 @@ import com.example.zdroa.myapplication.LoginAreaActivity;
 import com.example.zdroa.myapplication.QuestionnaireActivity;
 import com.example.zdroa.myapplication.R;
 import com.example.zdroa.myapplication.requests.Questionnaire_Request;
-import com.example.zdroa.myapplication.session.Session_Class;
+import com.example.zdroa.myapplication.session.SessionHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -168,9 +169,9 @@ public class EndingQuestionsFragment extends Fragment {
                             break;
                     }
 
-                    final Session_Class session = new Session_Class(getContext());
+                    final SessionHandler sessionHandler = new SessionHandler(getContext());
 
-                    String user_id = session.getID();
+                    String user_id = sessionHandler.getID();
                     final String finalTimer_time = timer_time;
                     final String finalPERSON_TYPE = PERSON_TYPE;
 
@@ -183,8 +184,8 @@ public class EndingQuestionsFragment extends Fragment {
                                 boolean success = jsonResponse.getBoolean("success");
 
                                 if (success) {
-                                    session.setVar("user_type_bool",null, true);
-                                    session.setVar("user_type", finalPERSON_TYPE, null);
+//                                    sessionHandler.setVar("user_type_bool",null, true);
+//                                    sessionHandler.setVar("user_type", finalPERSON_TYPE, null);
 
                                     QuestionnaireActivity.fa.finish();
                                     startActivity(new Intent(getActivity(), LoginAreaActivity.class));

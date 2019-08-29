@@ -1,8 +1,9 @@
 package com.example.zdroa.myapplication.communicators;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.example.zdroa.myapplication.Question_Fragments.AnxiousQuestionsFragment;
 import com.example.zdroa.myapplication.Question_Fragments.DependentQuestionsFragment;

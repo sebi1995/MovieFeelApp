@@ -6,11 +6,12 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Space;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -18,7 +19,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.zdroa.myapplication.aid.ConvertDbIdsToHashMapII;
 import com.example.zdroa.myapplication.requests.AddToWatchedList;
 import com.example.zdroa.myapplication.requests.GetWatchedList;
-import com.example.zdroa.myapplication.session.Session_Class;
+import com.example.zdroa.myapplication.session.SessionHandler;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -38,7 +39,7 @@ public class WatchedDetailsActivity extends AppCompatActivity {
 
     private String userID;
 
-    private static Session_Class session_class;
+    private static SessionHandler sessionHandler;
 
     private Intent intent;
 
@@ -51,8 +52,8 @@ public class WatchedDetailsActivity extends AppCompatActivity {
         fa = this;
 
         intent = this.getIntent();
-        session_class = new Session_Class(getApplicationContext());
-        userID = session_class.getID();
+        sessionHandler = new SessionHandler(getApplicationContext());
+        userID = sessionHandler.getID();
 
         movieWatched = (TextView) findViewById(R.id.watched_details_tv_favourite);
         movieWatched.setTextColor(Color.RED);
@@ -246,7 +247,8 @@ public class WatchedDetailsActivity extends AppCompatActivity {
 
                         if (success) {
                             String id = jsonResponse.getString("watched_list");
-                            session_class.setVar("watched_list", id, null);
+//                            sessionHandler.setVar("watched_list", id, null);
+                            // TODO: 25/08/2019 set watched list
                         }
 
                     } catch (JSONException e) {
@@ -265,7 +267,9 @@ public class WatchedDetailsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            HashMap<Integer, Integer> hashMap = new HashMap<>(getStringOfIdsFromDB(session_class.getWatchedList()));
+            HashMap<Integer, Integer> hashMap = null;
+//            new HashMap<>(getStringOfIdsFromDB(sessionHandler.getWatchedList()));
+            // TODO: 25/08/2019 get watched list
             System.out.println(hashMap);
             if (hashMap.containsValue(Integer.parseInt(movie_id))) {
                 watched = true;
@@ -285,7 +289,9 @@ public class WatchedDetailsActivity extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
 
             String movieId = movie_id;
-            String watchedList = session_class.getWatchedList();
+            String watchedList = null;
+//                    sessionHandler.getWatchedList();
+            // TODO: 25/08/2019 get watched list
 
             switch (movieId.length()) {
                 case 1:
@@ -313,7 +319,8 @@ public class WatchedDetailsActivity extends AppCompatActivity {
 
                         if (success) {
                             String id = jsonResponse.getString("watched_list");
-                            session_class.setVar("watched_list", id, null);
+//                            sessionHandler.setVar("watched_list", id, null);
+                            // TODO: 25/08/2019  set watched list
                         }
 
                     } catch (JSONException e) {
@@ -353,7 +360,8 @@ public class WatchedDetailsActivity extends AppCompatActivity {
 
                         if (success) {
                             String watchedList = jsonResponse.getString("watched_list");
-                            session_class.setVar("watched_list", watchedList, null);
+//                            session_class.setVar("watched_list", watchedList, null);
+                            // TODO: 25/08/2019 set watched list
                         }
 
                     } catch (JSONException e) {
@@ -364,7 +372,9 @@ public class WatchedDetailsActivity extends AppCompatActivity {
 
 
             String s = movie_id;//12
-            String watchedList = session_class.getWatchedList();
+            String watchedList = null;
+//            session_class.getWatchedList();
+            // TODO: 25/08/2019 set watched list
 
             switch (s.length()) {
                 case 1:

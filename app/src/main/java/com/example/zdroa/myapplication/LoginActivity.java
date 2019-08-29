@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -15,11 +14,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.zdroa.myapplication.requests.Login_Request;
-import com.example.zdroa.myapplication.session.Session_Class;
+import com.example.zdroa.myapplication.session.SessionHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,11 +30,37 @@ public class LoginActivity extends AppCompatActivity {
     private LinearLayout llLogin;
     private EditText etUsername;
     private EditText etPassword;
-    private Session_Class session;
+    private SessionHandler sessionHandler;
     private TextView errorMsg;
     private ProgressDialog progressDoalog;
 
     public static Activity fa;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        fa = this;
+//
+//        session = new Session_Class(getApplicationContext());
+//
+//        etUsername = (EditText) findViewById(R.id.login_et_username);
+//        etPassword = (EditText) findViewById(R.id.login_et_password);
+//        llLogin = (LinearLayout) findViewById(R.id.login_ll_login);
+//        errorMsg = (TextView) findViewById(R.id.login_tv_login_error);
+//
+//
+////        etUsername.setText("admin");
+////        etPassword.setText("admin123");
+//
+//        etUsername.addTextChangedListener(checkIfFieldsAreFilledIn);
+//        etPassword.addTextChangedListener(checkIfFieldsAreFilledIn);
+//        checkFieldsForEmptyValues();
+        Intent intent = new Intent(this, MoviesActivity.class);
+        startActivity(intent);
+    }
+
 
     private TextWatcher checkIfFieldsAreFilledIn = new TextWatcher() {
         @Override
@@ -64,29 +91,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        fa = this;
-
-        session = new Session_Class(getApplicationContext());
-
-        etUsername = (EditText) findViewById(R.id.login_et_username);
-        etPassword = (EditText) findViewById(R.id.login_et_password);
-        llLogin = (LinearLayout) findViewById(R.id.login_ll_login);
-        errorMsg = (TextView) findViewById(R.id.login_tv_login_error);
-
-
-//        etUsername.setText("admin");
-//        etPassword.setText("admin123");
-
-        etUsername.addTextChangedListener(checkIfFieldsAreFilledIn);
-        etPassword.addTextChangedListener(checkIfFieldsAreFilledIn);
-        checkFieldsForEmptyValues();
-    }
-
-    public void login_login(View v) {
+    public void loginOnClick(View v) {
         View view = fa.getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(LoginActivity.INPUT_METHOD_SERVICE);
@@ -122,31 +127,31 @@ public class LoginActivity extends AppCompatActivity {
                         String firstname = jsonResponse.getString("user_firstname");
                         String pType = jsonResponse.getString("person_type");
 
-                        session.setVar("user_id", String.valueOf(user_id), null);
-                        session.setVar("user_username", username, null);
-                        session.setVar("user_password", password, null);
-                        session.setVar("user_title", title, null);
-                        session.setVar("user_surname", surname, null);
-                        session.setVar("user_firstname", firstname, null);
+                        sessionHandler.setId(user_id);
+                        sessionHandler.setUserUsername(username);
+                        sessionHandler.setUserPassword(password);
+                        sessionHandler.setUserTitle(title);
+                        sessionHandler.setUserSurname(surname);
+                        sessionHandler.setUserFirstname(firstname);
 
                         if (pType.equals("null")) {
-                            session.setVar("user_type_bool", null, false);
+//                            sessionHandler.("user_type_bool", null, false);
                         } else {
-                            session.setVar("user_type_bool", null, true);
-                            session.setVar("user_type", pType, null);
+//                            sessionHandler.setVar("user_type_bool", null, true);
+//                            sessionHandler.setVar("user_type", pType, null);
                         }
 
-                        if (progressDoalog.isShowing()){
+                        if (progressDoalog.isShowing()) {
                             progressDoalog.dismiss();
                         }
-                        MainActivity.fa.finish();
-                        LoginActivity.fa.finish();
+//                        MainActivity.fa.finish();
+//                        LoginActivity.fa.finish();
                         if (RegisterActivity.fa != null) {
                             RegisterActivity.fa.finish();
                         }
                         LoginActivity.this.startActivity(new Intent(fa, LoginAreaActivity.class));
                     } else {
-                        if (progressDoalog.isShowing()){
+                        if (progressDoalog.isShowing()) {
                             progressDoalog.dismiss();
                         }
                         llLogin.setVisibility(View.VISIBLE);

@@ -1,14 +1,11 @@
 package com.example.zdroa.myapplication;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -22,12 +19,16 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
-import com.example.zdroa.myapplication.exec.randInt;
+import com.example.zdroa.myapplication.aid.MovieUtils;
+import com.example.zdroa.myapplication.exec.RandomIntegerClass;
 import com.example.zdroa.myapplication.requests.Register_Request;
 import com.example.zdroa.myapplication.requests.Username_Check_Request;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,19 +39,34 @@ import java.util.Locale;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    Calendar myCalendar = Calendar.getInstance();
-    SimpleDateFormat sqlDate;
-    boolean surname = false, firstname = false, email = false, repeatEmail = false, username = false, password = false;
-    Button bRegister;
-    Spinner sTitle;
+    private Calendar myCalendar = Calendar.getInstance();
+    private SimpleDateFormat sqlDate;
+    private boolean surnameValid = false;
+    private boolean firstnameValid = false;
+    private boolean emailValid = false;
+    private boolean repeatEmailValid = false;
+    private boolean usernameValid = false;
+    private boolean passwordValid = false;
+    private Button bRegister;
+    private Spinner sTitle;
 
-    TextInputLayout tilFirstname, tilSurname, tilDOB, tilEmail, tilRepeatemail, tilUsername, tilPassword;
-    EditText etFirstname, etSurname, etDOB, etEmail, etRepeatemail, etUsername, etPassword;
-    TextView tvUsernameCheck;
-
-    Boolean usernameChecked = false;
-
-    RadioGroup unOrEmail;
+    private TextInputLayout tilFirstname;
+    private TextInputLayout tilSurname;
+    private TextInputLayout tilDOB;
+    private TextInputLayout tilEmail;
+    private TextInputLayout tilRepeatemail;
+    private TextInputLayout tilUsername;
+    private TextInputLayout tilPassword;
+    private EditText etFirstname;
+    private EditText etSurname;
+    private EditText etDOB;
+    private EditText etEmail;
+    private EditText etRepeatemail;
+    private EditText etUsername;
+    private EditText etPassword;
+    private TextView tvUsernameCheck;
+    private Boolean usernameChecked = false;
+    private RadioGroup unOrEmail;
 
     public static Activity fa;
 
@@ -60,42 +76,46 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         fa = this;
 
-        sTitle = (Spinner) findViewById(R.id.register_spinner_title);
-        String[] items = new String[]{"Title", "Mr", "Mrs", "Ms", "Miss", "Dr"};
-        ArrayAdapter adapter = new ArrayAdapter<>(RegisterActivity.this, R.layout.registerspinner, R.id.spinnerText, items);
-        sTitle.setAdapter(adapter);
+        setupPageComponents();
 
-        etFirstname = (TextInputEditText) findViewById(R.id.register_et_firstname);
-        etSurname = (TextInputEditText) findViewById(R.id.register_et_surname);
-        etDOB = (TextInputEditText) findViewById(R.id.register_et_DOB);
-        etEmail = (TextInputEditText) findViewById(R.id.register_et_email);
-        etRepeatemail = (TextInputEditText) findViewById(R.id.register_et_repeatemail);
-        etUsername = (TextInputEditText) findViewById(R.id.register_et_username);
-        etPassword = (TextInputEditText) findViewById(R.id.register_et_password);
+        sTitle.setAdapter(
+                new ArrayAdapter<>(
+                        this,
+                        R.layout.registerspinner,
+                        R.id.spinnerText,
+                        MovieUtils.TITLES_ENTRIES_LIST));
 
-        bRegister = (Button) findViewById(R.id.register_b_register);
         bRegister.setEnabled(false);
-
-        tilFirstname = (TextInputLayout) findViewById(R.id.register_til_firstname);
-        tilSurname = (TextInputLayout) findViewById(R.id.register_til_surname);
-        tilDOB = (TextInputLayout) findViewById(R.id.register_til_dob);
-        tilEmail = (TextInputLayout) findViewById(R.id.register_til_email);
-        tilRepeatemail = (TextInputLayout) findViewById(R.id.register_til_repeatemail);
-        tilUsername = (TextInputLayout) findViewById(R.id.register_til_username);
-        tilPassword = (TextInputLayout) findViewById(R.id.register_til_password);
-        tvUsernameCheck = (TextView) findViewById(R.id.register_tv_usernameChecker);
-
-        unOrEmail = (RadioGroup) findViewById(R.id.register_rg_username_selector);
 
         usernameSelect(unOrEmail);
 
-        //Set onTextChanged listeners
-
+        //add onTextChangedListeners
         etSurname.addTextChangedListener(new MyTextWatcher(etSurname));
         etFirstname.addTextChangedListener(new MyTextWatcher(etFirstname));
         etEmail.addTextChangedListener(new MyTextWatcher(etEmail));
         etRepeatemail.addTextChangedListener(new MyTextWatcher(etRepeatemail));
         etPassword.addTextChangedListener(new MyTextWatcher(etPassword));
+    }
+
+    private void setupPageComponents() {
+        sTitle = findViewById(R.id.register_spinner_title);
+        etFirstname = findViewById(R.id.register_et_firstname);
+        etSurname = findViewById(R.id.register_et_surname);
+        etDOB = findViewById(R.id.register_et_DOB);
+        etEmail = findViewById(R.id.register_et_email);
+        etRepeatemail = findViewById(R.id.register_et_repeatemail);
+        etUsername = findViewById(R.id.register_et_username);
+        etPassword = findViewById(R.id.register_et_password);
+        bRegister = findViewById(R.id.register_b_register);
+        tilFirstname = findViewById(R.id.register_til_firstname);
+        tilSurname = findViewById(R.id.register_til_surname);
+        tilDOB = findViewById(R.id.register_til_dob);
+        tilEmail = findViewById(R.id.register_til_email);
+        tilRepeatemail = findViewById(R.id.register_til_repeatemail);
+        tilUsername = findViewById(R.id.register_til_username);
+        tilPassword = findViewById(R.id.register_til_password);
+        tvUsernameCheck = findViewById(R.id.register_tv_usernameChecker);
+        unOrEmail = findViewById(R.id.register_rg_username_selector);
     }
 
     public void registerRequest(View v) {
@@ -106,7 +126,7 @@ public class RegisterActivity extends AppCompatActivity {
         final String email = etEmail.getText().toString();
         final String username = etUsername.getText().toString();
         final String password = etPassword.getText().toString();
-        final int gen_key = randInt.randomInt(1, 100);
+        final int gen_key = RandomIntegerClass.randomInt(1, 100);
         final String usernameORemail = String.valueOf(usernameChecked);
 
         // Response received from the server
@@ -114,10 +134,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 try {
-                    JSONObject jsonResponse = new JSONObject(response);
-                    boolean success = jsonResponse.getBoolean("success");
-                    System.out.println(success);
-                    if (success) {
+                    if (new JSONObject(response).getBoolean("success")) {
                         fa.finish();
                         startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                     } else {
@@ -161,31 +178,28 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void usernameSelect(RadioGroup radioGroup) {
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.register_rb_email:
-                        usernameChecked = false;
-                        if (surname && firstname && email && repeatEmail && password){
-                            bRegister.setEnabled(true);
-                        }
-                        etUsername.removeTextChangedListener(new MyTextWatcher(etUsername));
-                        tvUsernameCheck.setVisibility(View.GONE);
-                        etUsername.setVisibility(View.GONE);
-                        break;
-                    case R.id.register_rb_username:
-                        usernameChecked = true;
-                        if (surname && firstname && email && repeatEmail && !username && password){
-                            bRegister.setEnabled(false);
-                        } else if (surname && firstname && email && repeatEmail && username && password){
-                            bRegister.setEnabled(true);
-                        }
-                        etUsername.addTextChangedListener(new MyTextWatcher(etUsername));
-                        tvUsernameCheck.setVisibility(View.VISIBLE);
-                        etUsername.setVisibility(View.VISIBLE);
-                        break;
-                }
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId) {
+                case R.id.register_rb_email:
+                    usernameChecked = false;
+                    if (surnameValid && firstnameValid && emailValid && repeatEmailValid && passwordValid) {
+                        bRegister.setEnabled(true);
+                    }
+                    etUsername.removeTextChangedListener(new MyTextWatcher(etUsername));
+                    tvUsernameCheck.setVisibility(View.GONE);
+                    etUsername.setVisibility(View.GONE);
+                    break;
+                case R.id.register_rb_username:
+                    usernameChecked = true;
+                    if (surnameValid && firstnameValid && emailValid && repeatEmailValid && !usernameValid && passwordValid) {
+                        bRegister.setEnabled(false);
+                    } else if (surnameValid && firstnameValid && emailValid && repeatEmailValid && usernameValid && passwordValid) {
+                        bRegister.setEnabled(true);
+                    }
+                    etUsername.addTextChangedListener(new MyTextWatcher(etUsername));
+                    tvUsernameCheck.setVisibility(View.VISIBLE);
+                    etUsername.setVisibility(View.VISIBLE);
+                    break;
             }
         });
     }
@@ -208,53 +222,46 @@ public class RegisterActivity extends AppCompatActivity {
 
             switch (view.getId()) {
                 case R.id.register_et_surname:
-                    if (!surnameCheck()){
+                    if (!surnameCheck()) {
                         bRegister.setEnabled(false);
                     }
-                    surname = surnameCheck();
+                    surnameValid = surnameCheck();
                     break;
                 case R.id.register_et_firstname:
-                    if (!firstnameCheck()){
+                    if (!firstnameCheck()) {
                         bRegister.setEnabled(false);
                     }
-                    firstname = firstnameCheck();
+                    firstnameValid = firstnameCheck();
                     break;
                 case R.id.register_et_email:
-                    if (!emailCheck()){
+                    if (!emailCheck()) {
                         bRegister.setEnabled(false);
                     }
-                    email = emailCheck();
+                    emailValid = emailCheck();
                     break;
                 case R.id.register_et_repeatemail:
-                    if (!repeatEmailCheck()){
+                    if (!repeatEmailCheck()) {
                         bRegister.setEnabled(false);
                     }
-                    repeatEmail = repeatEmailCheck();
+                    repeatEmailValid = repeatEmailCheck();
                     break;
                 case R.id.register_et_username:
-                    if (!usernameCheck()){
+                    if (!usernameCheck()) {
                         bRegister.setEnabled(false);
                     }
-                    username = usernameCheck();
+                    usernameValid = usernameCheck();
                     break;
                 case R.id.register_et_password:
-                    if (!passwordCheck()){
+                    if (!passwordCheck()) {
                         bRegister.setEnabled(false);
                     }
-                    password = passwordCheck();
+                    passwordValid = passwordCheck();
                     break;
             }
 
-            System.out.println("surname: " + surname);
-            System.out.println("firstname: " + firstname);
-            System.out.println("email: " + email);
-            System.out.println("repeatEmail: " + repeatEmail);
-            System.out.println("username: " + username);
-            System.out.println("password: " + password);
-
-            if (surname && firstname && email && repeatEmail && password) {
+            if (surnameValid && firstnameValid && emailValid && repeatEmailValid && passwordValid) {
                 if (usernameChecked) {
-                    if (username) {
+                    if (usernameValid) {
                         bRegister.setEnabled(true);
                     } else bRegister.setEnabled(false);
                 } else bRegister.setEnabled(true);
@@ -276,7 +283,9 @@ public class RegisterActivity extends AppCompatActivity {
                 tilSurname.setError("Surname cannot be longer than 15 characters.");
                 requestFocus(tilSurname);
                 return false;
-            } else tilSurname.setErrorEnabled(false);
+            } else {
+                tilSurname.setErrorEnabled(false);
+            }
             return true;
         }
 

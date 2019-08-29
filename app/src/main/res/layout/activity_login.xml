@@ -65,7 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:onClick="login_login"
+                android:onClick="loginOnClick"
                 android:text="Login" />
 
             <TextView

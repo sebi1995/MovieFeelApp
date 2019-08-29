@@ -6,7 +6,7 @@ import java.util.Random;
  * Created by zdroa on 03/05/2017.
  */
 
-public class randInt {
+public class RandomIntegerClass {
     public static int randomInt(int min, int max) {
 
         Random rand = new Random();

@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,9 +12,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.zdroa.myapplication.aid.ConvertDbIdsToHashMapII;
-import com.example.zdroa.myapplication.aid.HttpHandler;
-import com.example.zdroa.myapplication.session.Session_Class;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.android.volley.Response;
+import com.example.zdroa.myapplication.aid.MoviesHttpHandler;
+import com.example.zdroa.myapplication.session.SessionHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,7 +46,7 @@ public class WatchedListActivity extends AppCompatActivity {
 
     public static Activity fa;
 
-    Session_Class session_class;
+    SessionHandler sessionHandler;
     private ProgressDialog progressDoalog;
 
     @Override
@@ -54,7 +55,7 @@ public class WatchedListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_watched_list);
         fa = this;
 
-        session_class = new Session_Class(getApplicationContext());
+        sessionHandler = new SessionHandler(getApplicationContext());
 
         listView = (ListView) findViewById(R.id.watched_lvMovies);
         ivPrevious = (ImageView) findViewById(R.id.watched_iv_previous_results);
@@ -63,7 +64,8 @@ public class WatchedListActivity extends AppCompatActivity {
         tvPageNum = (TextView) findViewById(R.id.watched_layout_tv_page_no);
         tvResNum = (TextView) findViewById(R.id.watched_layout_tv_result_no);
 
-        watchedList = new HashMap<>(new ConvertDbIdsToHashMapII().getHasMap(session_class.getWatchedList()));
+//        watchedList = new HashMap<>(new ConvertDbIdsToHashMapII().getHasMap(sessionHandler);
+        // TODO: 25/08/2019 get watched list
 
         IDS_SIZE = watchedList.size();
         IDS_REMAINDER = IDS_SIZE % 20;
@@ -192,7 +194,7 @@ public class WatchedListActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            ListViewAdaptor adapter = new ListViewAdaptor(fa, POSTERS, TITLES, OVERVIEW, WATCHED);
+            ListViewAdaptor adapter = new ListViewAdaptor(fa, new ArrayList<>());
             listView.setAdapter(adapter);
 
             if ((((IDS_SIZE - IDS_REMAINDER) / 20) + 1) == 1) {
@@ -231,7 +233,7 @@ public class WatchedListActivity extends AppCompatActivity {
         }
 
         private Void populateTreeMaps() {
-            HttpHandler httpHandler = new HttpHandler();
+            MoviesHttpHandler httpHandler = new MoviesHttpHandler(getApplicationContext());
 
             IDS_AFTER_QUERY = new HashMap<>();
             TITLES = new HashMap<>();
@@ -256,7 +258,14 @@ public class WatchedListActivity extends AppCompatActivity {
                     Thread.sleep(100);
                     if (IDS.get(i) != null) {
 
-                        String jsonString = httpHandler.makeServiceCall("https://api.themoviedb.org/3/movie/" + IDS.get(i) + "?api_key=" + API_KEY + "&append_to_response=videos");
+                        String jsonString = "";
+
+                        httpHandler.makeMovieAndYoutubeLinkRequest(IDS.get(i), new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                System.out.println(response);
+                            }
+                        });
 
 
                         if (jsonString != null) {

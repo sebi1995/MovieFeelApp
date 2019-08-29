@@ -18,6 +18,6 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="print"
-        android:onClick="test"/>
+        android:onClick="test"
+        android:text="print" />
 </LinearLayout>
