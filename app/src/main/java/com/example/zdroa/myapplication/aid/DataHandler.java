@@ -10,7 +10,7 @@ public class DataHandler {
     //api requests
 
     public List<MovieModel> getMovies(int numberOfResults) {
-        System.out.println(numberOfResults);
+        System.out.println(numberOfResults+1);
         return null;
     }
 
