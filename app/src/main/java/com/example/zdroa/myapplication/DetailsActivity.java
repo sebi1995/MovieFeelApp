@@ -13,12 +13,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.zdroa.myapplication.aid.ConvertDbIdsToHashMapII;
-import com.example.zdroa.myapplication.requests.AddToWatchedList;
-import com.example.zdroa.myapplication.requests.GetWatchedList;
+import com.example.zdroa.myapplication.handlers.HttpRequestHandler;
 import com.example.zdroa.myapplication.session.Session_Class;
 import com.squareup.picasso.Picasso;
 
@@ -242,9 +240,7 @@ public class DetailsActivity extends AppCompatActivity {
                 }
             };
 
-            GetWatchedList getWatchedList = new GetWatchedList(userID, responseListener);
-            RequestQueue queue = Volley.newRequestQueue(fa);
-            queue.add(getWatchedList);
+            Volley.newRequestQueue(fa).add(HttpRequestHandler.getWatchedListByUserId(responseListener, userID));
 
             return null;
         }
@@ -308,9 +304,7 @@ public class DetailsActivity extends AppCompatActivity {
                 }
             };
 
-            AddToWatchedList addToWatchedList = new AddToWatchedList(userID, watchedList, responseListener);
-            RequestQueue queue = Volley.newRequestQueue(fa);
-            queue.add(addToWatchedList);
+            Volley.newRequestQueue(fa).add(HttpRequestHandler.addToWatchedList(responseListener, userID, watchedList));
             return null;
         }
 
@@ -371,10 +365,7 @@ public class DetailsActivity extends AppCompatActivity {
             HashMap<Integer, Integer> map = new HashMap<>(new ConvertDbIdsToHashMapII().getHasMap(watchedList));
 
             if (map.containsValue(Integer.parseInt(movie_id))) {
-                QSTRING = watchedList.replace(s, "");
-                AddToWatchedList addToWatchedList = new AddToWatchedList(userID, QSTRING, responseListener);
-                RequestQueue queue = Volley.newRequestQueue(fa);
-                queue.add(addToWatchedList);
+                Volley.newRequestQueue(fa).add(HttpRequestHandler.addToWatchedList(responseListener, userID, watchedList.replace(s, "")));
             }
 
             return null;

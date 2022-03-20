@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -21,12 +20,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.zdroa.myapplication.exec.randInt;
-import com.example.zdroa.myapplication.requests.Register_Request;
-import com.example.zdroa.myapplication.requests.Username_Check_Request;
+import com.example.zdroa.myapplication.handlers.HttpRequestHandler;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -36,6 +33,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -133,26 +131,19 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         };
-
-        Register_Request registerRequest = new Register_Request(title, firstname, surname, SQLdate, email, username, password, gen_key, usernameORemail, responseListener);
-        RequestQueue queue = Volley.newRequestQueue(RegisterActivity.this);
-        queue.add(registerRequest);
+        Volley.newRequestQueue(RegisterActivity.this).add(HttpRequestHandler.registerUser(responseListener, title, firstname, surname, SQLdate, email, username, password, gen_key, usernameORemail));
     }
 
     public void register_showCalendar(View v) {
-        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                myCalendar.set(java.util.Calendar.YEAR, year);
-                myCalendar.set(java.util.Calendar.MONTH, monthOfYear);
-                myCalendar.set(java.util.Calendar.DAY_OF_MONTH, dayOfMonth);
+        final DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
+            myCalendar.set(Calendar.YEAR, year);
+            myCalendar.set(Calendar.MONTH, monthOfYear);
+            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.UK);
-                sqlDate = new SimpleDateFormat("yyyyMMdd", Locale.UK);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.UK);
+            sqlDate = new SimpleDateFormat("yyyyMMdd", Locale.UK);
 
-                etDOB.setText(sdf.format(myCalendar.getTime()));
-            }
+            etDOB.setText(sdf.format(myCalendar.getTime()));
         };
 
         new DatePickerDialog(RegisterActivity.this, date, myCalendar
@@ -168,7 +159,7 @@ public class RegisterActivity extends AppCompatActivity {
                 switch (checkedId) {
                     case R.id.register_rb_email:
                         usernameChecked = false;
-                        if (surname && firstname && email && repeatEmail && password){
+                        if (surname && firstname && email && repeatEmail && password) {
                             bRegister.setEnabled(true);
                         }
                         etUsername.removeTextChangedListener(new MyTextWatcher(etUsername));
@@ -177,9 +168,9 @@ public class RegisterActivity extends AppCompatActivity {
                         break;
                     case R.id.register_rb_username:
                         usernameChecked = true;
-                        if (surname && firstname && email && repeatEmail && !username && password){
+                        if (surname && firstname && email && repeatEmail && !username && password) {
                             bRegister.setEnabled(false);
-                        } else if (surname && firstname && email && repeatEmail && username && password){
+                        } else if (surname && firstname && email && repeatEmail && username && password) {
                             bRegister.setEnabled(true);
                         }
                         etUsername.addTextChangedListener(new MyTextWatcher(etUsername));
@@ -209,37 +200,37 @@ public class RegisterActivity extends AppCompatActivity {
 
             switch (view.getId()) {
                 case R.id.register_et_surname:
-                    if (!surnameCheck()){
+                    if (!surnameCheck()) {
                         bRegister.setEnabled(false);
                     }
                     surname = surnameCheck();
                     break;
                 case R.id.register_et_firstname:
-                    if (!firstnameCheck()){
+                    if (!firstnameCheck()) {
                         bRegister.setEnabled(false);
                     }
                     firstname = firstnameCheck();
                     break;
                 case R.id.register_et_email:
-                    if (!emailCheck()){
+                    if (!emailCheck()) {
                         bRegister.setEnabled(false);
                     }
                     email = emailCheck();
                     break;
                 case R.id.register_et_repeatemail:
-                    if (!repeatEmailCheck()){
+                    if (!repeatEmailCheck()) {
                         bRegister.setEnabled(false);
                     }
                     repeatEmail = repeatEmailCheck();
                     break;
                 case R.id.register_et_username:
-                    if (!usernameCheck()){
+                    if (!usernameCheck()) {
                         bRegister.setEnabled(false);
                     }
                     username = usernameCheck();
                     break;
                 case R.id.register_et_password:
-                    if (!passwordCheck()){
+                    if (!passwordCheck()) {
                         bRegister.setEnabled(false);
                     }
                     password = passwordCheck();
@@ -383,31 +374,23 @@ public class RegisterActivity extends AppCompatActivity {
                         return false;
                     }
                 }
-                final boolean[] username_exists = {false};
-                Response.Listener<String> responseListener = new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject jsonResponse = new JSONObject(response);
-                            boolean usernameExists = jsonResponse.getBoolean("usernameExists");
-
-                            if (usernameExists) {
-                                username_exists[0] = true;
-                            } else {
-                                etUsername.setTextColor(Color.GREEN);
-                                tvUsernameCheck.setText("Username Available");
-                                tvUsernameCheck.setTextColor(Color.GREEN);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                AtomicBoolean usernameExists = new AtomicBoolean(false);
+                Response.Listener<String> responseListener = response -> {
+                    try {
+                        if (new JSONObject(response).getBoolean("usernameExists")) {
+                            usernameExists.set(true);
+                        } else {
+                            etUsername.setTextColor(Color.GREEN);
+                            tvUsernameCheck.setText("Username Available");
+                            tvUsernameCheck.setTextColor(Color.GREEN);
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                 };
-                Username_Check_Request unCheckRequest = new Username_Check_Request(etUsername.getText().toString(), usernameChecked, responseListener);
-                RequestQueue queue = Volley.newRequestQueue(RegisterActivity.this);
-                queue.add(unCheckRequest);
+                Volley.newRequestQueue(RegisterActivity.this).add(HttpRequestHandler.checkUsernameExists(responseListener, etUsername.getText().toString(), usernameChecked));
 
-                if (username_exists[0]) {
+                if (usernameExists.get()) {
                     tilUsername.setError("Username unavailable");
                     requestFocus(tilUsername);
                     return false;

@@ -3,19 +3,17 @@ package com.example.zdroa.myapplication;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.zdroa.myapplication.aid.HttpHandler;
 import com.example.zdroa.myapplication.aid.PersonTypesArrays;
-import com.example.zdroa.myapplication.requests.InsertToDB;
+import com.example.zdroa.myapplication.handlers.HttpRequestHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,7 +24,7 @@ import java.util.ArrayList;
 public class PopulateListsActivity extends AppCompatActivity {
 
     private static String API_KEY = "b692b9da86f1cf0c1b623ea6e2770101";
-    private static String STRING_LIST_OF_IDS = "";
+    private static StringBuilder movieIdsAsStringList = new StringBuilder();
 
     private static String pType;
     PersonTypesArrays personTypesArrays = new PersonTypesArrays();
@@ -43,55 +41,33 @@ public class PopulateListsActivity extends AppCompatActivity {
         final EditText resnum = (EditText) findViewById(R.id.etNumOfRes);
         RadioGroup rgPTYPE = (RadioGroup) findViewById(R.id.rgPersonTYPE);
 
-        rgPTYPE.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.Anxious:
-                        pType = "anxious";
-                        genLists.setEnabled(true);
-                        break;
-                    case R.id.Paranoid:
-                        pType = "paranoid";
-                        genLists.setEnabled(true);
-                        break;
-                    case R.id.Histrionic:
-                        pType = "histrionic";
-                        genLists.setEnabled(true);
-                        break;
-                    case R.id.Obsessive:
-                        pType = "obsessive";
-                        genLists.setEnabled(true);
-                        break;
-                    case R.id.Narcissist:
-                        pType = "narcissist";
-                        genLists.setEnabled(true);
-                        break;
-                    case R.id.Schizoid:
-                        pType = "schizoid";
-                        genLists.setEnabled(true);
-                        break;
-                    case R.id.Depressive:
-                        pType = "depressive";
-                        genLists.setEnabled(true);
-                        break;
-                    case R.id.Dependent:
-                        pType = "dependent";
-                        genLists.setEnabled(true);
-                        break;
-                }
+        rgPTYPE.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.Anxious) {
+                pType = "anxious";
+            } else if (checkedId == R.id.Paranoid) {
+                pType = "paranoid";
+            } else if (checkedId == R.id.Histrionic) {
+                pType = "histrionic";
+            } else if (checkedId == R.id.Obsessive) {
+                pType = "obsessive";
+            } else if (checkedId == R.id.Narcissist) {
+                pType = "narcissist";
+            } else if (checkedId == R.id.Schizoid) {
+                pType = "schizoid";
+            } else if (checkedId == R.id.Depressive) {
+                pType = "depressive";
+            } else if (checkedId == R.id.Dependent) {
+                pType = "dependent";
             }
+            genLists.setEnabled(true);
         });
 
         genLists.setEnabled(false);
 
 
-        genLists.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                num_of_results = Integer.parseInt(resnum.getText().toString());
-                new getWorkingIdsFromAPI(new ArrayList<>(personTypesArrays.PersonTypesArrays(pType))).execute();
-            }
+        genLists.setOnClickListener(v -> {
+            num_of_results = Integer.parseInt(resnum.getText().toString());
+            new getWorkingIdsFromAPI(new ArrayList<>(personTypesArrays.PersonTypesArrays(pType))).execute();
         });
     }
 
@@ -141,18 +117,19 @@ public class PopulateListsActivity extends AppCompatActivity {
 
                             switch (id.length()) {
                                 case 1:
-                                    STRING_LIST_OF_IDS += "0000" + id;
+                                    movieIdsAsStringList.append("0000");
                                     break;
                                 case 2:
-                                    STRING_LIST_OF_IDS += "000" + id;
+                                    movieIdsAsStringList.append("000");
                                     break;
                                 case 3:
-                                    STRING_LIST_OF_IDS += "00" + id;
+                                    movieIdsAsStringList.append("00");
                                     break;
                                 case 4:
-                                    STRING_LIST_OF_IDS += "0" + id;
+                                    movieIdsAsStringList.append("0");
                                     break;
                             }
+                            movieIdsAsStringList.append(id);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -196,9 +173,7 @@ public class PopulateListsActivity extends AppCompatActivity {
                 }
             };
 
-            InsertToDB loginRequest = new InsertToDB(pType, STRING_LIST_OF_IDS, responseListener);
-            RequestQueue queue = Volley.newRequestQueue(PopulateListsActivity.this);
-            queue.add(loginRequest);
+            Volley.newRequestQueue(PopulateListsActivity.this).add(HttpRequestHandler.addMovieIdsToDbByPersonType(responseListener, pType, movieIdsAsStringList.toString()));
             progressDoalog.dismiss();
         }
     }

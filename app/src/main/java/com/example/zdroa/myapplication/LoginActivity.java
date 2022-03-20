@@ -16,10 +16,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
-import com.example.zdroa.myapplication.requests.Login_Request;
+import com.example.zdroa.myapplication.handlers.HttpRequestHandler;
 import com.example.zdroa.myapplication.session.Session_Class;
 
 import org.json.JSONException;
@@ -165,8 +164,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
-        Login_Request loginRequest = new Login_Request(username, password, responseListener);
-        RequestQueue queue = Volley.newRequestQueue(fa);
-        queue.add(loginRequest);
+        Volley.newRequestQueue(fa).add(HttpRequestHandler.login(responseListener, username, password));
     }
 }

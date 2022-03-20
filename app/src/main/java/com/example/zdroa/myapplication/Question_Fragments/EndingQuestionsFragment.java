@@ -13,13 +13,12 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.zdroa.myapplication.LoginAreaActivity;
 import com.example.zdroa.myapplication.QuestionnaireActivity;
 import com.example.zdroa.myapplication.R;
-import com.example.zdroa.myapplication.requests.Questionnaire_Request;
+import com.example.zdroa.myapplication.handlers.HttpRequestHandler;
 import com.example.zdroa.myapplication.session.Session_Class;
 
 import org.json.JSONException;
@@ -184,7 +183,7 @@ public class EndingQuestionsFragment extends Fragment {
                                 boolean success = jsonResponse.getBoolean("success");
 
                                 if (success) {
-                                    session.setVar("user_type_bool",null, true);
+                                    session.setVar("user_type_bool", null, true);
                                     session.setVar("user_type", finalPERSON_TYPE, null);
 
                                     QuestionnaireActivity.fa.finish();
@@ -204,9 +203,9 @@ public class EndingQuestionsFragment extends Fragment {
                         }
                     };
 
-                    Questionnaire_Request QRT = new Questionnaire_Request(user_id, finalTimer_time, finalPERSON_TYPE, responseListener);
-                    RequestQueue queue = Volley.newRequestQueue(getActivity());
-                    queue.add(QRT);
+                    Volley.newRequestQueue(getActivity())
+                            .add(HttpRequestHandler.registerQuestionnaire(responseListener, user_id, finalTimer_time, finalPERSON_TYPE));
+
                 }
             }
         });

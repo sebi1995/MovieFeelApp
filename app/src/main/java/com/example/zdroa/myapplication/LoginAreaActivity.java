@@ -10,11 +10,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
-import com.example.zdroa.myapplication.requests.GetIDSFromDB;
-import com.example.zdroa.myapplication.requests.GetWatchedList;
+import com.example.zdroa.myapplication.handlers.HttpRequestHandler;
 import com.example.zdroa.myapplication.session.Session_Class;
 
 import org.json.JSONException;
@@ -28,7 +26,7 @@ public class LoginAreaActivity extends AppCompatActivity {
     private getIDSFromDB getIDSFromDB = new getIDSFromDB();
     private getWatchedListFromDB getWatchedListFromDB = new getWatchedListFromDB();
 
-    public static Activity fa;
+    private Activity fa;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,30 +53,12 @@ public class LoginAreaActivity extends AppCompatActivity {
         if (session.getUsername().equals("admin")) {
             Button gotopop = (Button) findViewById(R.id.bGoToPopulateLists);
             gotopop.setVisibility(View.VISIBLE);
-            gotopop.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(new Intent(fa, PopulateListsActivity.class));
-                }
-            });
+            gotopop.setOnClickListener(v -> startActivity(new Intent(fa, PopulateListsActivity.class)));
         }
-
-
-        Button goToMovies = (Button) findViewById(R.id.login_area_b_movies);
-        goToMovies.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(fa, MoviesActivity.class));
-            }
-        });
-
-        Button goToWatchedList = (Button) findViewById(R.id.login_area_b_watchedlist);
-        goToWatchedList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(fa, WatchedListActivity.class));
-            }
-        });
+        findViewById(R.id.login_area_b_movies)
+                .setOnClickListener(v -> startActivity(new Intent(fa, MoviesActivity.class)));
+        findViewById(R.id.login_area_b_watchedlist)
+                .setOnClickListener(v -> startActivity(new Intent(fa, WatchedListActivity.class)));
     }
 
     public void login_area_logout(View v) {
@@ -92,27 +72,21 @@ public class LoginAreaActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            Response.Listener<String> responseListener = new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    try {
-                        JSONObject jsonResponse = new JSONObject(response);
-                        boolean success = jsonResponse.getBoolean("success");
+            Response.Listener<String> responseListener = response -> {
+                try {
+                    JSONObject jsonResponse = new JSONObject(response);
+                    boolean success = jsonResponse.getBoolean("success");
 
-                        if (success) {
-                            String id = jsonResponse.getString("id");
-                            session.setVar("ids_list", id, null);
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    if (success) {
+                        String id = jsonResponse.getString("id");
+                        session.setVar("ids_list", id, null);
                     }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             };
-
-            GetIDSFromDB getIDSFromDB = new GetIDSFromDB(pType, responseListener);
-            RequestQueue queue = Volley.newRequestQueue(LoginAreaActivity.this);
-            queue.add(getIDSFromDB);
+            Volley.newRequestQueue(LoginAreaActivity.this).add(HttpRequestHandler.getMovieIdsByPersonType(responseListener, pType));
             return null;
         }
 
@@ -126,27 +100,23 @@ public class LoginAreaActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            Response.Listener<String> responseListener = new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    try {
-                        JSONObject jsonResponse = new JSONObject(response);
-                        boolean success = jsonResponse.getBoolean("success");
+            Response.Listener<String> responseListener = response -> {
+                try {
+                    JSONObject jsonResponse = new JSONObject(response);
+                    boolean success = jsonResponse.getBoolean("success");
 
-                        if (success) {
-                            String id = jsonResponse.getString("watched_list");
-                            session.setVar("watched_list", id, null);
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    if (success) {
+                        String id = jsonResponse.getString("watched_list");
+                        session.setVar("watched_list", id, null);
                     }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             };
 
-            GetWatchedList getWatchedList = new GetWatchedList(userID, responseListener);
-            RequestQueue queue = Volley.newRequestQueue(LoginAreaActivity.this);
-            queue.add(getWatchedList);
+            Volley.newRequestQueue(LoginAreaActivity.this)
+                    .add(HttpRequestHandler.getWatchedListByUserId(responseListener, userID));
 
             return null;
         }
