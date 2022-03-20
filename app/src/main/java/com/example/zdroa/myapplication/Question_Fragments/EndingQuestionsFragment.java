@@ -1,16 +1,17 @@
 package com.example.zdroa.myapplication.Question_Fragments;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
