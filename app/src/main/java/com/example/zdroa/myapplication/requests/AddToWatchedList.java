@@ -12,7 +12,7 @@ import java.util.Map;
  */
 
 public class AddToWatchedList extends StringRequest {
-    private static final String WATCHED_LIST_REQUEST_URL = "http://www.movie-feel.com/php_scripts/addToWatchedList_request.php";
+
     private Map<String, String> params;
 
     public AddToWatchedList(
@@ -20,7 +20,7 @@ public class AddToWatchedList extends StringRequest {
             String newWatchedList,
             Response.Listener<String> listener) {
 
-        super(Request.Method.POST, WATCHED_LIST_REQUEST_URL, listener, null);
+        super(Request.Method.POST, RequestUrls.ADD_TO_WATCHED_LIST_REQUEST_URL, listener, null);
         params = new HashMap<>();
         params.put("user_id", id);
         params.put("watched_list", newWatchedList);
