@@ -17,7 +17,6 @@ import com.example.zdroa.myapplication.utils.AppSettings;
 
 public class MainActivity extends AppCompatActivity {
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
