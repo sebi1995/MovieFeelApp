@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/appBgColor"
     android:orientation="vertical"
-    tools:context=".Question_Fragments.HistrionicQuestionsFragment">
+    tools:context=".activities.questionnaire.fragments.HistrionicQuestionsFragment">
 
     <TextView
         android:layout_width="match_parent"

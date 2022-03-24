@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/appBgColor"
     android:orientation="vertical"
-    tools:context=".Question_Fragments.DepressiveQuestionsFragment">
+    tools:context=".activities.questionnaire.fragments.DepressiveQuestionsFragment">
 
     <TextView
         android:id="@+id/questionnaire_tv_title"

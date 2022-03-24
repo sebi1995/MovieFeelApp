@@ -21,10 +21,11 @@
     <ImageView
         android:layout_width="200dp"
         android:layout_height="50dp"
-        android:layout_gravity="right"
+        android:layout_gravity="end"
         app:srcCompat="@drawable/comply_to_tmdb_tac"
         android:id="@+id/imageView"
-        android:layout_weight="11598.17" />
+        android:layout_weight="11598.17"
+        android:contentDescription="Movie database api logo." />
 
     <Space
         android:layout_width="match_parent"
@@ -36,20 +37,19 @@
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/moviefeel_logo"
         android:id="@+id/imageView2"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:contentDescription="MovieFeel application logo." />
 
     <Button
-        android:id="@+id/main_b_gotoLoginActivity"
+        android:id="@+id/main_b_navigate_to_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="main_onButtonClick"
-        android:text="Sign in" />
+        android:text="Log in" />
 
     <Button
-        android:id="@+id/main_b_gotoRegisterActivity"
+        android:id="@+id/main_b_navigate_to_register"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="main_onButtonClick"
         android:text="Register" />
 
     <Space

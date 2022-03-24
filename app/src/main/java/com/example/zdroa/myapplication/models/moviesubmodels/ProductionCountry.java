@@ -7,18 +7,27 @@ public class ProductionCountry {
 
     @SerializedName("iso_3166_1")
     @Expose
-    private String iso31661;
+    private String iso_3166_1;
 
     @SerializedName("name")
     @Expose
     private String name;
 
-    public String getIso31661() {
-        return iso31661;
+    public ProductionCountry(){
+
     }
 
-    public void setIso31661(String iso31661) {
-        this.iso31661 = iso31661;
+    public ProductionCountry(String iso_3166_1, String name) {
+        this.iso_3166_1 = iso_3166_1;
+        this.name = name;
+    }
+
+    public String getIso_3166_1() {
+        return iso_3166_1;
+    }
+
+    public void setIso_3166_1(String iso_3166_1) {
+        this.iso_3166_1 = iso_3166_1;
     }
 
     public String getName() {

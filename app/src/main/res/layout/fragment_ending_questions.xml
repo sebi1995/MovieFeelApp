@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/appBgColor"
-    tools:context=".Question_Fragments.EndingQuestionsFragment">
+    tools:context=".activities.questionnaire.fragments.EndingQuestionsFragment">
 
     <TextView
         android:id="@+id/ending_tv_title"

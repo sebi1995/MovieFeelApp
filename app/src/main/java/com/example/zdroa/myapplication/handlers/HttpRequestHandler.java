@@ -46,8 +46,8 @@ public class HttpRequestHandler {
                 );
     }
 
-    public static StringRequest login(Response.Listener<String> listener, String username, String password) {
-        return new PostRequest(LOGIN_REQUEST_URL, listener)
+    public static StringRequest login(Response.Listener<String> listener, String username, String password, Response.ErrorListener errorListener) {
+        return new PostRequest(LOGIN_REQUEST_URL, listener, errorListener)
                 .setParams(
                         Map.of("username", username,
                                 "password", password)
@@ -61,10 +61,17 @@ public class HttpRequestHandler {
                 );
     }
 
-    public static StringRequest registerQuestionnaire(Response.Listener<String> listener, String userId, String time, String personType) {
+    public static StringRequest getMovieIdsByPersonType(Response.Listener<String> listener, Response.ErrorListener errorListener, String personType) {
+        return new PostRequest(GET_MOVIE_IDS_REQUEST_URL, listener, errorListener)
+                .setParams(
+                        Map.of("person_type", personType)
+                );
+    }
+
+    public static StringRequest registerQuestionnaire(Response.Listener<String> listener, Integer userId, String time, String personType) {
         return new PostRequest(REGISTER_QUESTIONNAIRE_REQUEST_URL, listener)
                 .setParams(
-                        Map.of("user_id", userId,
+                        Map.of("user_id", String.valueOf(userId),
                                 "time", time,
                                 "person_type", personType)
                 );

@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class PopulateListsActivity extends AppCompatActivity {
 
@@ -37,39 +38,31 @@ public class PopulateListsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_populate_lists);
 
-        final Button genLists = (Button) findViewById(R.id.admin_gen_list);
-        final EditText resnum = (EditText) findViewById(R.id.etNumOfRes);
-        RadioGroup rgPTYPE = (RadioGroup) findViewById(R.id.rgPersonTYPE);
+        Button genLists = findViewById(R.id.admin_gen_list);
+        EditText resnum = findViewById(R.id.etNumOfRes);
+        RadioGroup rgPTYPE = findViewById(R.id.rgPersonTYPE);
 
         rgPTYPE.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.Anxious) {
-                pType = "anxious";
-            } else if (checkedId == R.id.Paranoid) {
-                pType = "paranoid";
-            } else if (checkedId == R.id.Histrionic) {
-                pType = "histrionic";
-            } else if (checkedId == R.id.Obsessive) {
-                pType = "obsessive";
-            } else if (checkedId == R.id.Narcissist) {
-                pType = "narcissist";
-            } else if (checkedId == R.id.Schizoid) {
-                pType = "schizoid";
-            } else if (checkedId == R.id.Depressive) {
-                pType = "depressive";
-            } else if (checkedId == R.id.Dependent) {
-                pType = "dependent";
-            }
+            pType = map.get(checkedId);
             genLists.setEnabled(true);
         });
-
         genLists.setEnabled(false);
-
-
         genLists.setOnClickListener(v -> {
             num_of_results = Integer.parseInt(resnum.getText().toString());
             new getWorkingIdsFromAPI(new ArrayList<>(personTypesArrays.PersonTypesArrays(pType))).execute();
         });
     }
+
+    private static final Map<Integer, String> map = Map.of(
+            R.id.Anxious, "anxious",
+            R.id.Paranoid, "paranoid",
+            R.id.Histrionic, "histrionic",
+            R.id.Obsessive, "obsessive",
+            R.id.Narcissist, "narcissist",
+            R.id.Schizoid, "schizoid",
+            R.id.Depressive, "depressive",
+            R.id.Dependent, "dependent"
+    );
 
 
     class getWorkingIdsFromAPI extends AsyncTask<Void, Void, Void> {

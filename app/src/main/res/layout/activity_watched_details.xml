@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#efefef"
-    tools:context="com.example.zdroa.myapplication.WatchedDetailsActivity">
+    tools:context="com.example.zdroa.myapplication.activities.main.watchedmovies.WatchedDetailsActivity">
 
     <ScrollView
         android:layout_width="match_parent"

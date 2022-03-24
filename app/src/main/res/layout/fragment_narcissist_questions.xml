@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/appBgColor"
     android:orientation="vertical"
-    tools:context=".Question_Fragments.NarcissistQuestionsFragment">
+    tools:context=".activities.questionnaire.fragments.NarcissistQuestionsFragment">
 
     <TextView
         android:layout_width="match_parent"

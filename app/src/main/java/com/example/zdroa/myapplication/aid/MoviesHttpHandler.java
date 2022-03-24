@@ -8,6 +8,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.zdroa.myapplication.utils.MovieUtils;
 
 public class MoviesHttpHandler {
 
@@ -17,25 +18,13 @@ public class MoviesHttpHandler {
         this.QUEUE = Volley.newRequestQueue(context);
     }
 
-    /**
-     * make request to get movie with youtube links
-     *
-     * @param movieId         movie id
-     * @param successListener what should happen on success
-     */
     public void makeMovieAndYoutubeLinkRequest(Integer movieId, Response.Listener<String> successListener) {
         makeStandardGetMovieRequest(
-                MovieUtils.getMoviesRequestUrlWithVideos(movieId),
+                MovieUtils.getMoviesRequestUrlWithYoutubeVideos(movieId),
                 successListener
         );
     }
 
-    /**
-     * makek request to get basic movie data
-     *
-     * @param movieId
-     * @param successListener
-     */
     public void makeMovieRequest(Integer movieId, Response.Listener<String> successListener) {
         makeStandardGetMovieRequest(
                 MovieUtils.getMoviesRequestUrl(movieId),

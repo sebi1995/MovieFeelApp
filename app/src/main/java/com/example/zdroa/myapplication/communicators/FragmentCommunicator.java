@@ -5,16 +5,16 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
-import com.example.zdroa.myapplication.Question_Fragments.AnxiousQuestionsFragment;
-import com.example.zdroa.myapplication.Question_Fragments.DependentQuestionsFragment;
-import com.example.zdroa.myapplication.Question_Fragments.DepressiveQuestionsFragment;
-import com.example.zdroa.myapplication.Question_Fragments.EndingQuestionsFragment;
-import com.example.zdroa.myapplication.Question_Fragments.HistrionicQuestionsFragment;
-import com.example.zdroa.myapplication.Question_Fragments.InitializerFragment;
-import com.example.zdroa.myapplication.Question_Fragments.NarcissistQuestionsFragment;
-import com.example.zdroa.myapplication.Question_Fragments.ObsessiveQuestionsFragment;
-import com.example.zdroa.myapplication.Question_Fragments.ParanoidQuestionsFragment;
-import com.example.zdroa.myapplication.Question_Fragments.SchizoidQuestionsFragment;
+import com.example.zdroa.myapplication.activities.questionnaire.fragments.AnxiousQuestionsFragment;
+import com.example.zdroa.myapplication.activities.questionnaire.fragments.DependentQuestionsFragment;
+import com.example.zdroa.myapplication.activities.questionnaire.fragments.DepressiveQuestionsFragment;
+import com.example.zdroa.myapplication.activities.questionnaire.fragments.EndingQuestionsFragment;
+import com.example.zdroa.myapplication.activities.questionnaire.fragments.HistrionicQuestionsFragment;
+import com.example.zdroa.myapplication.activities.questionnaire.fragments.InitializerFragment;
+import com.example.zdroa.myapplication.activities.questionnaire.fragments.NarcissistQuestionsFragment;
+import com.example.zdroa.myapplication.activities.questionnaire.fragments.ObsessiveQuestionsFragment;
+import com.example.zdroa.myapplication.activities.questionnaire.fragments.ParanoidQuestionsFragment;
+import com.example.zdroa.myapplication.activities.questionnaire.fragments.SchizoidQuestionsFragment;
 
 
 public class FragmentCommunicator extends FragmentStatePagerAdapter {

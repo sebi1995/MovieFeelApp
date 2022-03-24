@@ -3,6 +3,8 @@ package com.example.zdroa.myapplication.models.moviesubmodels;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.time.OffsetDateTime;
+
 public class Result {
 
     @SerializedName("id")
@@ -19,7 +21,7 @@ public class Result {
 
     @SerializedName("key")
     @Expose
-    private String key;
+    private String urlEnd;
 
     @SerializedName("name")
     @Expose
@@ -36,6 +38,32 @@ public class Result {
     @SerializedName("type")
     @Expose
     private String type;
+
+    @SerializedName("official")
+    @Expose
+    private Boolean official;
+
+    @SerializedName("published_at")
+    @Expose
+    private OffsetDateTime publishedAt;
+
+    public Boolean getOfficial() {
+        return official;
+    }
+
+    public OffsetDateTime getPublishedAt() {
+        return publishedAt;
+    }
+
+    public Result setPublishedAt(OffsetDateTime publishedAt) {
+        this.publishedAt = publishedAt;
+        return this;
+    }
+
+    public Result setOfficial(Boolean official) {
+        this.official = official;
+        return this;
+    }
 
     public String getId() {
         return id;
@@ -61,12 +89,12 @@ public class Result {
         this.iso31661 = iso31661;
     }
 
-    public String getKey() {
-        return key;
+    public String getUrlEnd() {
+        return urlEnd;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setUrlEnd(String urlEnd) {
+        this.urlEnd = urlEnd;
     }
 
     public String getName() {

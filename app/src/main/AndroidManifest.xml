@@ -14,43 +14,41 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait"
-            android:exported="true">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".activities.accountmanagement.LoginActivity"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <activity
-            android:name=".LoginAreaActivity"
+            android:name=".activities.main.HomeActivity"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".activities.accountmanagement.RegisterActivity"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <activity
-            android:name=".QuestionnaireActivity"
+            android:name=".activities.questionnaire.QuestionnaireActivity"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <activity
-            android:name=".MoviesActivity"
+            android:name=".activities.main.movies.MoviesActivity"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <activity
-            android:name=".DetailsActivity"
+            android:name=".activities.main.movies.details.DetailsActivity"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <activity android:name=".PopulateListsActivity" />
-        <activity android:name=".WatchedListActivity" />
-        <activity android:name=".WatchedDetailsActivity" />
-        <activity android:name=".TestTActivity" />
+        <activity android:name=".activities.main.watchedmovies.WatchedListActivity" />
+        <activity android:name=".activities.main.watchedmovies.WatchedDetailsActivity" />
     </application>
 
 </manifest>

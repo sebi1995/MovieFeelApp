@@ -4,10 +4,13 @@ import com.example.zdroa.myapplication.models.moviesubmodels.BelongsToCollection
 import com.example.zdroa.myapplication.models.moviesubmodels.Genre;
 import com.example.zdroa.myapplication.models.moviesubmodels.ProductionCompany;
 import com.example.zdroa.myapplication.models.moviesubmodels.ProductionCountry;
+import com.example.zdroa.myapplication.models.moviesubmodels.Result;
 import com.example.zdroa.myapplication.models.moviesubmodels.SpokenLanguage;
+import com.example.zdroa.myapplication.models.moviesubmodels.Video;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MovieModel {
@@ -30,7 +33,7 @@ public class MovieModel {
 
     @SerializedName("genres")
     @Expose
-    private List<Genre> genres = null;
+    private List<Genre> genres = new ArrayList<>();
 
     @SerializedName("homepage")
     @Expose
@@ -66,11 +69,11 @@ public class MovieModel {
 
     @SerializedName("production_companies")
     @Expose
-    private List<ProductionCompany> productionCompanies = null;
+    private List<ProductionCompany> productionCompanies = new ArrayList<>();
 
     @SerializedName("production_countries")
     @Expose
-    private List<ProductionCountry> productionCountries = null;
+    private List<ProductionCountry> productionCountries = new ArrayList<>();
 
     @SerializedName("release_date")
     @Expose
@@ -86,7 +89,7 @@ public class MovieModel {
 
     @SerializedName("spoken_languages")
     @Expose
-    private List<SpokenLanguage> spokenLanguages = null;
+    private List<SpokenLanguage> spokenLanguages = new ArrayList<>();
 
     @SerializedName("status")
     @Expose
@@ -112,204 +115,249 @@ public class MovieModel {
     @Expose
     private Integer voteCount;
 
+    @SerializedName("videos")
+    @Expose
+    private Video youtubeVideos;
+
+    public MovieModel() {
+
+    }
+
+    public MovieModel(Integer id) {
+        this.id = id;
+    }
+
     public Boolean getAdult() {
         return adult;
     }
 
-    public void setAdult(Boolean adult) {
+    public MovieModel setAdult(Boolean adult) {
         this.adult = adult;
+        return this;
     }
 
     public String getBackdropPath() {
         return backdropPath;
     }
 
-    public void setBackdropPath(String backdropPath) {
+    public MovieModel setBackdropPath(String backdropPath) {
         this.backdropPath = backdropPath;
+        return this;
     }
 
     public BelongsToCollection getBelongsToCollection() {
         return belongsToCollection;
     }
 
-    public void setBelongsToCollection(BelongsToCollection belongsToCollection) {
+    public MovieModel setBelongsToCollection(BelongsToCollection belongsToCollection) {
         this.belongsToCollection = belongsToCollection;
+        return this;
     }
 
     public Integer getBudget() {
         return budget;
     }
 
-    public void setBudget(Integer budget) {
+    public MovieModel setBudget(Integer budget) {
         this.budget = budget;
+        return this;
     }
 
     public List<Genre> getGenres() {
         return genres;
     }
 
-    public void setGenres(List<Genre> genres) {
+    public MovieModel setGenres(List<Genre> genres) {
         this.genres = genres;
+        return this;
     }
 
     public String getHomepage() {
         return homepage;
     }
 
-    public void setHomepage(String homepage) {
+    public MovieModel setHomepage(String homepage) {
         this.homepage = homepage;
+        return this;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public MovieModel setId(Integer id) {
         this.id = id;
+        return this;
     }
 
     public String getImdbId() {
         return imdbId;
     }
 
-    public void setImdbId(String imdbId) {
+    public MovieModel setImdbId(String imdbId) {
         this.imdbId = imdbId;
+        return this;
     }
 
     public String getOriginalLanguage() {
         return originalLanguage;
     }
 
-    public void setOriginalLanguage(String originalLanguage) {
+    public MovieModel setOriginalLanguage(String originalLanguage) {
         this.originalLanguage = originalLanguage;
+        return this;
     }
 
     public String getOriginalTitle() {
         return originalTitle;
     }
 
-    public void setOriginalTitle(String originalTitle) {
+    public MovieModel setOriginalTitle(String originalTitle) {
         this.originalTitle = originalTitle;
+        return this;
     }
 
     public String getOverview() {
         return overview;
     }
 
-    public void setOverview(String overview) {
+    public MovieModel setOverview(String overview) {
         this.overview = overview;
+        return this;
     }
 
     public Double getPopularity() {
         return popularity;
     }
 
-    public void setPopularity(Double popularity) {
+    public MovieModel setPopularity(Double popularity) {
         this.popularity = popularity;
+        return this;
     }
 
     public String getPosterPath() {
         return posterPath;
     }
 
-    public void setPosterPath(String posterPath) {
+    public MovieModel setPosterPath(String posterPath) {
         this.posterPath = posterPath;
+        return this;
     }
 
     public List<ProductionCompany> getProductionCompanies() {
         return productionCompanies;
     }
 
-    public void setProductionCompanies(List<ProductionCompany> productionCompanies) {
+    public MovieModel setProductionCompanies(List<ProductionCompany> productionCompanies) {
         this.productionCompanies = productionCompanies;
+        return this;
     }
 
     public List<ProductionCountry> getProductionCountries() {
         return productionCountries;
     }
 
-    public void setProductionCountries(List<ProductionCountry> productionCountries) {
+    public MovieModel setProductionCountries(List<ProductionCountry> productionCountries) {
         this.productionCountries = productionCountries;
+        return this;
     }
 
     public String getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(String releaseDate) {
+    public MovieModel setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
+        return this;
     }
 
     public Integer getRevenue() {
         return revenue;
     }
 
-    public void setRevenue(Integer revenue) {
+    public MovieModel setRevenue(Integer revenue) {
         this.revenue = revenue;
+        return this;
     }
 
     public Integer getRuntime() {
         return runtime;
     }
 
-    public void setRuntime(Integer runtime) {
+    public MovieModel setRuntime(Integer runtime) {
         this.runtime = runtime;
+        return this;
     }
 
     public List<SpokenLanguage> getSpokenLanguages() {
         return spokenLanguages;
     }
 
-    public void setSpokenLanguages(List<SpokenLanguage> spokenLanguages) {
+    public MovieModel setSpokenLanguages(List<SpokenLanguage> spokenLanguages) {
         this.spokenLanguages = spokenLanguages;
+        return this;
     }
 
     public String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public MovieModel setStatus(String status) {
         this.status = status;
+        return this;
     }
 
     public String getTagline() {
         return tagline;
     }
 
-    public void setTagline(String tagline) {
+    public MovieModel setTagline(String tagline) {
         this.tagline = tagline;
+        return this;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public MovieModel setTitle(String title) {
         this.title = title;
+        return this;
     }
 
     public Boolean getVideo() {
         return video;
     }
 
-    public void setVideo(Boolean video) {
+    public MovieModel setVideo(Boolean video) {
         this.video = video;
+        return this;
     }
 
     public Double getVoteAverage() {
         return voteAverage;
     }
 
-    public void setVoteAverage(Double voteAverage) {
+    public MovieModel setVoteAverage(Double voteAverage) {
         this.voteAverage = voteAverage;
+        return this;
     }
 
     public Integer getVoteCount() {
         return voteCount;
     }
 
-    public void setVoteCount(Integer voteCount) {
+    public MovieModel setVoteCount(Integer voteCount) {
         this.voteCount = voteCount;
+        return this;
     }
 
+    public Video getYoutubeVideos() {
+        return youtubeVideos;
+    }
+
+    public MovieModel setYoutubeVideos(Video results) {
+        this.youtubeVideos = results;
+        return this;
+    }
 }
