@@ -4,7 +4,6 @@ import com.example.zdroa.myapplication.models.moviesubmodels.BelongsToCollection
 import com.example.zdroa.myapplication.models.moviesubmodels.Genre;
 import com.example.zdroa.myapplication.models.moviesubmodels.ProductionCompany;
 import com.example.zdroa.myapplication.models.moviesubmodels.ProductionCountry;
-import com.example.zdroa.myapplication.models.moviesubmodels.Result;
 import com.example.zdroa.myapplication.models.moviesubmodels.SpokenLanguage;
 import com.example.zdroa.myapplication.models.moviesubmodels.Video;
 import com.google.gson.annotations.Expose;
@@ -13,7 +12,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieModel {
+public class Movie {
 
     @SerializedName("adult")
     @Expose
@@ -119,11 +118,11 @@ public class MovieModel {
     @Expose
     private Video youtubeVideos;
 
-    public MovieModel() {
+    public Movie() {
 
     }
 
-    public MovieModel(Integer id) {
+    public Movie(Integer id) {
         this.id = id;
     }
 
@@ -131,7 +130,7 @@ public class MovieModel {
         return adult;
     }
 
-    public MovieModel setAdult(Boolean adult) {
+    public Movie setAdult(Boolean adult) {
         this.adult = adult;
         return this;
     }
@@ -140,7 +139,7 @@ public class MovieModel {
         return backdropPath;
     }
 
-    public MovieModel setBackdropPath(String backdropPath) {
+    public Movie setBackdropPath(String backdropPath) {
         this.backdropPath = backdropPath;
         return this;
     }
@@ -149,7 +148,7 @@ public class MovieModel {
         return belongsToCollection;
     }
 
-    public MovieModel setBelongsToCollection(BelongsToCollection belongsToCollection) {
+    public Movie setBelongsToCollection(BelongsToCollection belongsToCollection) {
         this.belongsToCollection = belongsToCollection;
         return this;
     }
@@ -158,7 +157,7 @@ public class MovieModel {
         return budget;
     }
 
-    public MovieModel setBudget(Integer budget) {
+    public Movie setBudget(Integer budget) {
         this.budget = budget;
         return this;
     }
@@ -167,7 +166,7 @@ public class MovieModel {
         return genres;
     }
 
-    public MovieModel setGenres(List<Genre> genres) {
+    public Movie setGenres(List<Genre> genres) {
         this.genres = genres;
         return this;
     }
@@ -176,7 +175,7 @@ public class MovieModel {
         return homepage;
     }
 
-    public MovieModel setHomepage(String homepage) {
+    public Movie setHomepage(String homepage) {
         this.homepage = homepage;
         return this;
     }
@@ -185,7 +184,7 @@ public class MovieModel {
         return id;
     }
 
-    public MovieModel setId(Integer id) {
+    public Movie setId(Integer id) {
         this.id = id;
         return this;
     }
@@ -194,7 +193,7 @@ public class MovieModel {
         return imdbId;
     }
 
-    public MovieModel setImdbId(String imdbId) {
+    public Movie setImdbId(String imdbId) {
         this.imdbId = imdbId;
         return this;
     }
@@ -203,7 +202,7 @@ public class MovieModel {
         return originalLanguage;
     }
 
-    public MovieModel setOriginalLanguage(String originalLanguage) {
+    public Movie setOriginalLanguage(String originalLanguage) {
         this.originalLanguage = originalLanguage;
         return this;
     }
@@ -212,7 +211,7 @@ public class MovieModel {
         return originalTitle;
     }
 
-    public MovieModel setOriginalTitle(String originalTitle) {
+    public Movie setOriginalTitle(String originalTitle) {
         this.originalTitle = originalTitle;
         return this;
     }
@@ -221,7 +220,7 @@ public class MovieModel {
         return overview;
     }
 
-    public MovieModel setOverview(String overview) {
+    public Movie setOverview(String overview) {
         this.overview = overview;
         return this;
     }
@@ -230,7 +229,7 @@ public class MovieModel {
         return popularity;
     }
 
-    public MovieModel setPopularity(Double popularity) {
+    public Movie setPopularity(Double popularity) {
         this.popularity = popularity;
         return this;
     }
@@ -239,7 +238,7 @@ public class MovieModel {
         return posterPath;
     }
 
-    public MovieModel setPosterPath(String posterPath) {
+    public Movie setPosterPath(String posterPath) {
         this.posterPath = posterPath;
         return this;
     }
@@ -248,7 +247,7 @@ public class MovieModel {
         return productionCompanies;
     }
 
-    public MovieModel setProductionCompanies(List<ProductionCompany> productionCompanies) {
+    public Movie setProductionCompanies(List<ProductionCompany> productionCompanies) {
         this.productionCompanies = productionCompanies;
         return this;
     }
@@ -257,7 +256,7 @@ public class MovieModel {
         return productionCountries;
     }
 
-    public MovieModel setProductionCountries(List<ProductionCountry> productionCountries) {
+    public Movie setProductionCountries(List<ProductionCountry> productionCountries) {
         this.productionCountries = productionCountries;
         return this;
     }
@@ -266,7 +265,7 @@ public class MovieModel {
         return releaseDate;
     }
 
-    public MovieModel setReleaseDate(String releaseDate) {
+    public Movie setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
         return this;
     }
@@ -275,7 +274,7 @@ public class MovieModel {
         return revenue;
     }
 
-    public MovieModel setRevenue(Integer revenue) {
+    public Movie setRevenue(Integer revenue) {
         this.revenue = revenue;
         return this;
     }
@@ -284,7 +283,7 @@ public class MovieModel {
         return runtime;
     }
 
-    public MovieModel setRuntime(Integer runtime) {
+    public Movie setRuntime(Integer runtime) {
         this.runtime = runtime;
         return this;
     }
@@ -293,7 +292,7 @@ public class MovieModel {
         return spokenLanguages;
     }
 
-    public MovieModel setSpokenLanguages(List<SpokenLanguage> spokenLanguages) {
+    public Movie setSpokenLanguages(List<SpokenLanguage> spokenLanguages) {
         this.spokenLanguages = spokenLanguages;
         return this;
     }
@@ -302,7 +301,7 @@ public class MovieModel {
         return status;
     }
 
-    public MovieModel setStatus(String status) {
+    public Movie setStatus(String status) {
         this.status = status;
         return this;
     }
@@ -311,7 +310,7 @@ public class MovieModel {
         return tagline;
     }
 
-    public MovieModel setTagline(String tagline) {
+    public Movie setTagline(String tagline) {
         this.tagline = tagline;
         return this;
     }
@@ -320,7 +319,7 @@ public class MovieModel {
         return title;
     }
 
-    public MovieModel setTitle(String title) {
+    public Movie setTitle(String title) {
         this.title = title;
         return this;
     }
@@ -329,7 +328,7 @@ public class MovieModel {
         return video;
     }
 
-    public MovieModel setVideo(Boolean video) {
+    public Movie setVideo(Boolean video) {
         this.video = video;
         return this;
     }
@@ -338,7 +337,7 @@ public class MovieModel {
         return voteAverage;
     }
 
-    public MovieModel setVoteAverage(Double voteAverage) {
+    public Movie setVoteAverage(Double voteAverage) {
         this.voteAverage = voteAverage;
         return this;
     }
@@ -347,7 +346,7 @@ public class MovieModel {
         return voteCount;
     }
 
-    public MovieModel setVoteCount(Integer voteCount) {
+    public Movie setVoteCount(Integer voteCount) {
         this.voteCount = voteCount;
         return this;
     }
@@ -356,7 +355,7 @@ public class MovieModel {
         return youtubeVideos;
     }
 
-    public MovieModel setYoutubeVideos(Video results) {
+    public Movie setYoutubeVideos(Video results) {
         this.youtubeVideos = results;
         return this;
     }
