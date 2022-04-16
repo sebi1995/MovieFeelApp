@@ -1,56 +1,37 @@
 package com.example.zdroa.myapplication;
 
-import android.app.Activity;
-import android.content.Intent;
+
 import android.os.Bundle;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.zdroa.myapplication.activities.accountmanagement.LoginActivity;
 import com.example.zdroa.myapplication.activities.accountmanagement.RegisterActivity;
 import com.example.zdroa.myapplication.activities.main.movies.MoviesActivity;
-import com.example.zdroa.myapplication.activities.questionnaire.QuestionnaireActivity;
-import com.example.zdroa.myapplication.aid.NetworkCheck;
 import com.example.zdroa.myapplication.handlers.UserSessionHandler;
+import com.example.zdroa.myapplication.repositories.MovieRepository;
+import com.example.zdroa.myapplication.services.MovieService;
 import com.example.zdroa.myapplication.utils.AppSettings;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ActivityNavigator {
+
+    public UserSessionHandler userSessionHandler;
+    private MovieService movieService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        UserSessionHandler userSession = new UserSessionHandler(this);
-        if (AppSettings.IS_LOGIN_SYSTEM_ENABLED) {
-            if (userSession.getId() != null) {
-                if (userSession.getPersonType() == null) {
-                    startActivityIfDeviceHasNetworkConnectionOrShowToast(QuestionnaireActivity.class);
-                    return;
-                } else {
-                    startActivityIfDeviceHasNetworkConnectionOrShowToast(MoviesActivity.class);
-                }
-            }
+        userSessionHandler = new UserSessionHandler(getApplicationContext());
+        movieService = new MovieService(new MovieRepository(getApplicationContext()));
+
+        if (AppSettings.LOGIN_SYSTEM_ENABLED) {
+            redirectIfSessionDoesNotMeetRequirements(userSessionHandler, this);
         } else {
-            startActivityIfDeviceHasNetworkConnectionOrShowToast(MoviesActivity.class);
+            launchActivityWithFinish(this, MoviesActivity.class);
         }
-        findViewById(R.id.main_b_navigate_to_login).setOnClickListener(view -> startActivityIfDeviceHasNetworkConnectionOrShowToast(LoginActivity.class));
-        findViewById(R.id.main_b_navigate_to_register).setOnClickListener(view -> startActivityIfDeviceHasNetworkConnectionOrShowToast(RegisterActivity.class));
-    }
 
-    private void startActivityIfDeviceHasNetworkConnectionOrShowToast(Class<?> activity) {
-        if (deviceHasNetworkConnection(this)) {
-            startActivity(new Intent(this, activity));
-            finish();
-        }
+        findViewById(R.id.main_go_to_login_card_view).setOnClickListener(view -> launchActivity(this, LoginActivity.class));
+        findViewById(R.id.main_go_to_register_card_view).setOnClickListener(view -> launchActivity(this, RegisterActivity.class));
     }
-
-    private boolean deviceHasNetworkConnection(Activity activity) {
-        boolean networkConnection = NetworkCheck.hasNetworkConnection(activity);
-        if (!networkConnection) {
-            Toast.makeText(this, "Network connectivity issues.", Toast.LENGTH_SHORT).show();
-        }
-        return networkConnection;
-    }
-
 }
