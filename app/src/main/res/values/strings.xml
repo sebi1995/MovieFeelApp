@@ -3,4 +3,15 @@
     <string name="title_activity_member_area">MemberAreaActivity</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_after_login_area">AfterLoginAreaActivity</string>
+    <string name="booki">BookI</string>
+    <string name="welcome_back">Welcome Back</string>
+    <string name="read_it_together">Read it together</string>
+    <string name="skip">Skip</string>
+    <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_up">Sign up</string>
+    <string name="forget_password">Forget Password?</string>
+    <string name="login_email_hint">Email</string>
+    <string name="login_password_hint">Password</string>
 </resources>

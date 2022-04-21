@@ -7,19 +7,17 @@ import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.Response;
-import com.android.volley.toolbox.Volley;
 import com.example.zdroa.myapplication.MainActivity;
 import com.example.zdroa.myapplication.R;
 import com.example.zdroa.myapplication.activities.questionnaire.QuestionnaireActivity;
-import com.example.zdroa.myapplication.handlers.HttpRequestHandler;
 import com.example.zdroa.myapplication.handlers.UserSessionHandler;
+import com.google.common.collect.ImmutableMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -115,19 +113,21 @@ public class EndingQuestionsFragment extends Fragment {
                 mChronometer.stop();
                 timerDuration = String.valueOf(SystemClock.elapsedRealtime() - mChronometer.getBase());
                 timerDuration = timerDuration.substring(0, timerDuration.length() - 3);
-                personType = Map.of(
-                        1, "anxious",
-                        2, "paranoid",
-                        3, "histrionic",
-                        4, "obsessive",
-                        5, "narcissist",
-                        6, "schizoid",
-                        7, "depressive",
-                        8, "dependent"
-                ).get(entriesSortedByValues(QuestionnaireActivity.getQuestionAnswer()).last().getKey());
+                ImmutableMap<Integer, String> PERSON_TYPE = ImmutableMap.<Integer, String>builder()
+                        .put(1, "anxious")
+                        .put(2, "paranoid")
+                        .put(3, "histrionic")
+                        .put(4, "obsessive")
+                        .put(5, "narcissist")
+                        .put(6, "schizoid")
+                        .put(7, "depressive")
+                        .put(8, "dependent")
+                        .build();
+                personType = PERSON_TYPE.get(entriesSortedByValues(QuestionnaireActivity.getQuestionAnswer()).last().getKey());
             }
 
-            UserSessionHandler session = new UserSessionHandler(getContext());
+            UserSessionHandler session = null;
+//            = new UserSessionHandler(getContext());
 
             String finalPersonType = personType;
             Response.Listener<String> responseListener = response -> {
@@ -151,14 +151,14 @@ public class EndingQuestionsFragment extends Fragment {
                 }
             };
 
-            Volley.newRequestQueue(getContext())
-                    .add(HttpRequestHandler
-                            .registerQuestionnaire(
-                                    responseListener,
-                                    session.getId(),
-                                    timerDuration,
-                                    personType)
-                    );
+//            Volley.newRequestQueue(getContext())
+//                    .add(HttpRequestHandler
+//                            .registerQuestionnaire(
+//                                    responseListener,
+//                                    session.getId(),
+//                                    timerDuration,
+//                                    personType)
+//                    );
 
         });
         return view;

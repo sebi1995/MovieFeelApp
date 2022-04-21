@@ -11,7 +11,8 @@
         android:icon="@drawable/moviefeel_logo"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -43,12 +44,10 @@
             android:launchMode="singleInstance"
             android:screenOrientation="fullSensor" />
         <activity
-            android:name=".activities.main.movies.details.DetailsActivity"
+            android:name=".activities.main.movies.details.MovieDetailsActivity"
             android:launchMode="singleInstance"
             android:screenOrientation="fullSensor" />
-        <activity android:name=".PopulateListsActivity" />
-        <activity android:name=".activities.main.watchedmovies.WatchedListActivity" />
-        <activity android:name=".activities.main.watchedmovies.WatchedDetailsActivity" />
+        <activity android:name=".activities.main.movies.WatchedMoviesActivity" />
     </application>
 
 </manifest>

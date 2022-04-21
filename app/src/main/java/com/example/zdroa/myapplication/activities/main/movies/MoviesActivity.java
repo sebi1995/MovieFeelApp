@@ -1,166 +1,162 @@
 package com.example.zdroa.myapplication.activities.main.movies;
 
-import static com.example.zdroa.myapplication.utils.MovieJsonFieldNames.ADULT;
-import static com.example.zdroa.myapplication.utils.MovieJsonFieldNames.ID;
-import static com.example.zdroa.myapplication.utils.MovieJsonFieldNames.ORIGINAL_LANGUAGE;
-import static com.example.zdroa.myapplication.utils.MovieJsonFieldNames.OVERVIEW;
-import static com.example.zdroa.myapplication.utils.MovieJsonFieldNames.POSTER_PATH;
-import static com.example.zdroa.myapplication.utils.MovieJsonFieldNames.PRODUCTION_COUNTRIES;
-import static com.example.zdroa.myapplication.utils.MovieJsonFieldNames.RELEASE_DATE;
-import static com.example.zdroa.myapplication.utils.MovieJsonFieldNames.RELEASE_STATUS;
-import static com.example.zdroa.myapplication.utils.MovieJsonFieldNames.RUNTIME;
-import static com.example.zdroa.myapplication.utils.MovieJsonFieldNames.SPOKEN_LANGUAGES;
-import static com.example.zdroa.myapplication.utils.MovieJsonFieldNames.TITLE;
-import static com.example.zdroa.myapplication.utils.MovieJsonFieldNames.VOTE_AVERAGE;
-import static com.example.zdroa.myapplication.utils.MovieJsonFieldNames.YOUTUBE_LINKS;
+import static com.example.zdroa.myapplication.utils.AppSettings.MAX_MOVIES_PER_PAGE;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
-import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.zdroa.myapplication.ActivityNavigator;
+import com.example.zdroa.myapplication.BasicActivity;
 import com.example.zdroa.myapplication.R;
-import com.example.zdroa.myapplication.activities.main.movies.details.DetailsActivity;
-import com.example.zdroa.myapplication.models.MovieModel;
+import com.example.zdroa.myapplication.handlers.LoadingSpinner;
+import com.example.zdroa.myapplication.handlers.UserSessionHandler;
+import com.example.zdroa.myapplication.models.Movie;
+import com.example.zdroa.myapplication.models.moviesubmodels.Genre;
 import com.example.zdroa.myapplication.models.moviesubmodels.ProductionCountry;
 import com.example.zdroa.myapplication.models.moviesubmodels.Result;
 import com.example.zdroa.myapplication.models.moviesubmodels.SpokenLanguage;
-import com.example.zdroa.myapplication.handlers.UserSessionHandler;
-import com.example.zdroa.myapplication.tasks.implementation.MovieGetter;
-import com.example.zdroa.myapplication.tasks.HttpRequestRunner;
+import com.example.zdroa.myapplication.repositories.RestApiRepository;
+import com.example.zdroa.myapplication.repositories.UserRepository;
+import com.example.zdroa.myapplication.services.RestApiMovieService;
+import com.example.zdroa.myapplication.services.UserService;
+import com.example.zdroa.myapplication.utilities.MoviesListViewAdaptor;
 import com.example.zdroa.myapplication.utils.AppSettings;
+import com.example.zdroa.myapplication.utils.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class MoviesActivity extends AppCompatActivity {
+public class MoviesActivity extends AppCompatActivity implements BasicActivity, ActivityNavigator {
 
-
-    private List<MovieModel> cachedData = new ArrayList<>();
-
-    private final AtomicInteger page = new AtomicInteger(1);
-
-    private ListView listView;
+    private ListView moviesLv;
     private ImageView previousIv;
     private ImageView nextIv;
-    private ProgressBar progressBar;
+    private LoadingSpinner loadingSpinner;
+    public UserSessionHandler userSessionHandler;
+    private List<Integer> userWatchedMovies;
 
-    private UserSessionHandler session_handler;
-
+    public RestApiMovieService restApiMovieService;
+    public UserService userService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movies);
-        session_handler = new UserSessionHandler(getApplicationContext());
+        initViews();
 
-        RelativeLayout layout = findViewById(R.id.movies_ll);
-        progressBar = new ProgressBar(MoviesActivity.this, null, android.R.attr.progressBarStyleLarge);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(100, 100);
-        params.addRule(RelativeLayout.CENTER_IN_PARENT);
-        layout.addView(progressBar, params);
-        hideProgressBar();
+        List<Movie> cachedMovies = new ArrayList<>();
+
+        userSessionHandler = new UserSessionHandler(getApplicationContext().getSharedPreferences(AppSettings.USER_SESSION_SHARED_PREFERENCES, Context.MODE_PRIVATE), getApplicationContext().getSharedPreferences(AppSettings.USER_SESSION_SHARED_PREFERENCES, Context.MODE_PRIVATE).edit());
+        redirectIfSessionDoesNotMeetRequirements(userSessionHandler, this);
+        userWatchedMovies = new ArrayList<>();
+        userWatchedMovies.addAll(userSessionHandler.getWatchedMoviesIds());
+        userService = new UserService(new UserRepository(getApplicationContext()));
+        restApiMovieService = new RestApiMovieService(new RestApiRepository(getApplicationContext()), new Logger(RestApiMovieService.class));
+        loadingSpinner = new LoadingSpinner(this, this.getWindow(), moviesLv, findViewById(R.id.activity_movies), true);
+
         // TODO: 22/03/2022 get watched movies and somehow show if a movie is watched
-
-        listView = findViewById(R.id.movies_lvMovies);
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            MovieModel movie = cachedData.get(position + ((page.get() - 1) * AppSettings.MOVIES_PER_PAGE_LIMIT));
-            startActivity(
-                    new Intent(MoviesActivity.this, DetailsActivity.class)
-                            .putExtra(ID, movie.getId())
-                            .putExtra(TITLE, movie.getTitle())
-                            .putExtra(POSTER_PATH, movie.getPosterPath())
-                            .putExtra(ADULT, movie.getAdult())
-                            .putExtra(OVERVIEW, movie.getOverview())
-                            .putExtra(RUNTIME, movie.getRuntime())
-                            .putExtra(RELEASE_STATUS, movie.getStatus())
-                            .putExtra(RELEASE_DATE, movie.getReleaseDate())
-                            .putExtra(VOTE_AVERAGE, movie.getVoteAverage())
-                            .putExtra(ORIGINAL_LANGUAGE, movie.getOriginalLanguage())
-                            .putStringArrayListExtra(PRODUCTION_COUNTRIES, (ArrayList<String>) movie.getProductionCountries().stream().map(ProductionCountry::getName).collect(Collectors.toList()))
-                            .putStringArrayListExtra(SPOKEN_LANGUAGES, (ArrayList<String>) movie.getSpokenLanguages().stream().map(SpokenLanguage::getName).collect(Collectors.toList()))
-                            .putStringArrayListExtra(YOUTUBE_LINKS, (ArrayList<String>) movie.getYoutubeVideos().getVideos().stream().map(Result::getUrlEnd).collect(Collectors.toList()))
-            );
+        AtomicInteger currentPage = new AtomicInteger(0);
+        moviesLv.setOnItemClickListener((parent, view, position, id) -> {
+            Movie movie = cachedMovies.get(position + (currentPage.get() * MAX_MOVIES_PER_PAGE));
+            MovieActivityNavigator.startMovieDetailsActivityWithParams(this, movie.getId(), movie.getTitle(), movie.getPosterPath(), movie.getAdult(), movie.getOverview(), movie.getRuntime(), movie.getStatus(), movie.getReleaseDate(), movie.getVoteAverage(), movie.getOriginalLanguage(),
+                    movie.getGenres().stream().map(Genre::getName).collect(Collectors.toList()),
+                    movie.getProductionCountries().stream().map(ProductionCountry::getName).collect(Collectors.toList()),
+                    movie.getSpokenLanguages().stream().map(SpokenLanguage::getName).collect(Collectors.toList()),
+                    movie.getYoutubeVideos().getVideos().stream().map(Result::getUrlEnd).collect(Collectors.toList()));
         });
 
-        nextIv = findViewById(R.id.movies_iv_next_results);
-        nextIv.setOnClickListener(view -> loadDataIntoListView(page.incrementAndGet()));
+        previousIv.setOnClickListener(view -> loadDataIntoListView(cachedMovies, currentPage.decrementAndGet()));
+        nextIv.setOnClickListener(view -> loadDataIntoListView(cachedMovies, currentPage.incrementAndGet()));
 
-        previousIv = findViewById(R.id.movies_iv_previous_results);
-        previousIv.setOnClickListener(view -> loadDataIntoListView(page.decrementAndGet()));
-
-        loadDataIntoListView(page.get());
-
-        setNextIvActive();
-        setPreviousIvInactive();
-
-        findViewById(R.id.movies_b_exit_activity).setOnClickListener(v -> finish());
+        loadDataIntoListView(cachedMovies, currentPage.get());
     }
 
+    @Override
+    public void initViews() {
+        this.moviesLv = findViewById(R.id.movies_lvMovies);
+        this.nextIv = findViewById(R.id.movies_next_results_image_view);
+        this.previousIv = findViewById(R.id.movies_previous_results_image_view);
+    }
 
-    private void loadDataIntoListView(int page) {
-        showProgressBar();
-        if (page * AppSettings.MOVIES_PER_PAGE_LIMIT <= cachedData.size()) {
-            int offset = (page - 1) * AppSettings.MOVIES_PER_PAGE_LIMIT;
-            updateListView(cachedData.subList(offset, offset + AppSettings.MOVIES_PER_PAGE_LIMIT));
-            hideProgressBar();
+    private void loadDataIntoListView(List<Movie> cachedMovies, int currentPageNumber) {
+        loadingSpinner.showAndHideParentViewAndDisableUserInput();
+        int startIndex = currentPageNumber * MAX_MOVIES_PER_PAGE;
+        int endIndex = startIndex + MAX_MOVIES_PER_PAGE;
+        boolean moreCachedMoviesThanRequested = endIndex <= cachedMovies.size();
+        if (moreCachedMoviesThanRequested) {
+            updateListView(cachedMovies.subList(startIndex, endIndex));
+            loadingSpinner.hideAndShowParentViewAndEnableUserInput();
+            enablePreviousIvIfNotFirstPage(currentPageNumber);
         } else {
-            HttpRequestRunner.executeAsync(new MovieGetter(getLastFetchedMovie()), results -> {
-                cachedData.addAll(results);
-                updateListView(results);
-                hideProgressBar();
-            });
+            restApiMovieService.fetchMoviesStartingWithIdAndLimit(
+                    resultMovies -> {
+                        cachedMovies.addAll(resultMovies);
+
+                        if (cachedMovies.size() < MAX_MOVIES_PER_PAGE) {
+                            updateListViewWithLessThanMaxMoviesAndDisableNextButton(cachedMovies);
+                        } else {
+                            updateListViewWithSegmentedNumberOfMoviesAndEnableNextButton(cachedMovies, startIndex, endIndex);
+                        }
+                        loadingSpinner.hideAndShowParentViewAndEnableUserInput();
+                        enablePreviousIvIfNotFirstPage(currentPageNumber);
+                    },
+                    cachedMovies.isEmpty() ? 1 : cachedMovies.get(cachedMovies.size() - 1).getId(),
+                    MAX_MOVIES_PER_PAGE
+            );
         }
-        if (page == 1) {
-            setPreviousIvInactive();
-        } else if (page == 2) {
-            setPreviousIvActive();
+        disablePreviousIvIfFirstPage(currentPageNumber);
+    }
+
+    private void updateListViewWithSegmentedNumberOfMoviesAndEnableNextButton(List<Movie> cachedMovies, int startIndex, int endIndex) {
+        updateListView(cachedMovies.subList(startIndex, endIndex));
+        setNextIvEnabled();
+    }
+
+    private void updateListViewWithLessThanMaxMoviesAndDisableNextButton(List<Movie> cachedMovies) {
+        updateListView(cachedMovies);
+        setNextIvDisabled();
+    }
+
+    private void disablePreviousIvIfFirstPage(int currentPageNumber) {
+        if (currentPageNumber == 0) {
+            setPreviousIvDisabled();
         }
     }
 
-    private void updateListView(List<MovieModel> data) {
-        listView.setAdapter(new MoviesListViewAdaptor(this, data));
+    private void enablePreviousIvIfNotFirstPage(int currentPageNumber) {
+        if (currentPageNumber == 1) {
+            setPreviousIvEnabled();
+        }
     }
 
-    private void showProgressBar() {
-        progressBar.setVisibility(View.VISIBLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    private void updateListView(List<Movie> data) {
+        moviesLv.setAdapter(new MoviesListViewAdaptor(this, data, Collections.emptyList()));
     }
 
-    private void hideProgressBar() {
-        progressBar.setVisibility(View.GONE);
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-    }
-
-    private Integer getLastFetchedMovie() {
-        return cachedData.isEmpty() ? 0 : cachedData.get(cachedData.size() - 1).getId();
-    }
-
-    private void setNextIvActive() {
-        nextIv.setImageResource(R.mipmap.ic_next_results_active);
+    private void setNextIvEnabled() {
+        nextIv.setImageResource(R.mipmap.ic_next_results_enabled);
         nextIv.setEnabled(true);
     }
 
-    private void setNextIvInactive() {
-        nextIv.setImageResource(R.mipmap.ic_next_results_inactive);
+    private void setNextIvDisabled() {
+        nextIv.setImageResource(R.mipmap.ic_next_results_disabled);
         nextIv.setEnabled(false);
     }
 
-    private void setPreviousIvActive() {
-        previousIv.setImageResource(R.mipmap.ic_previous_results_active);
+    private void setPreviousIvEnabled() {
+        previousIv.setImageResource(R.mipmap.ic_previous_results_enabled);
         previousIv.setEnabled(true);
     }
 
-    private void setPreviousIvInactive() {
-        previousIv.setImageResource(R.mipmap.ic_previous_results_inactive);
+    private void setPreviousIvDisabled() {
+        previousIv.setImageResource(R.mipmap.ic_previous_results_disabled);
         previousIv.setEnabled(false);
     }
 }

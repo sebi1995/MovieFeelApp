@@ -12,5 +12,64 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <!-- The launcher theme. It sets the main window background to the launch_screen drawable -->
+
+    <!--styles for app-->
+    <!--df dialog-->
+
+    <style name="viewParent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="viewParent.headerText">
+        <item name="android:textColor">@color/contentTextColor</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="text_input_layout_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColorHint">@color/primaryTextColor</item>
+        <item name="android:layout_marginTop">10dp</item>
+    </style>
+
+    <style name="text_input_edit_text_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:backgroundTint">@color/primaryTextColor</item>
+        <item name="android:textSize">18sp</item>
+        <item name="colorControlHighlight">@color/black</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginVertical">20dp</item>
+        <item name="android:background">@drawable/register_button</item>
+        <item name="android:backgroundTint">#BACAC9</item>
+        <item name="android:color">@color/appBgColor</item>
+        <item name="android:enabled">false</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">#B7000000</item>
+        <item name="android:textSize">26sp</item>
+    </style>
+
+    <style name="card_view_layout" parent="CardView">
+       <item name="android:layout_width">match_parent</item>
+       <item name="android:layout_height">wrap_content</item>
+       <item name="android:layout_margin">20dp</item>
+       <item name="cardCornerRadius">40dp</item>
+       <item name="cardBackgroundColor">@color/colorSplashText</item>
+    </style>
 
 </resources>

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#efefef"
-    tools:context="com.example.zdroa.myapplication.activities.main.movies.details.DetailsActivity">
+    tools:context="com.example.zdroa.myapplication.activities.main.movies.details.MovieDetailsActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -17,7 +17,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/details_tv_movie_title"
+                android:id="@+id/details_movie_title_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -82,7 +82,7 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/details_tv_release_status"
+                    android:id="@+id/details_release_status_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#000"
@@ -123,7 +123,7 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/details_tv_release_date"
+                    android:id="@+id/details_release_date_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#000"
@@ -164,7 +164,7 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/details_tv_adult"
+                    android:id="@+id/details_is_adult_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#000"
@@ -205,7 +205,7 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/details_tv_vote_average"
+                    android:id="@+id/details_vote_average_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#000"
@@ -246,7 +246,7 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/details_tv_runtime"
+                    android:id="@+id/details_runtime_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#000"
@@ -287,7 +287,7 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/details_tv_original_language"
+                    android:id="@+id/details_original_language_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#000"
@@ -309,10 +309,9 @@
                 android:background="#000" />
 
             <TextView
-                android:id="@+id/details_tv_favourite"
+                android:id="@+id/details_add_to_watched_list_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="CheckIfAddedToWatched"
                 android:paddingVertical="5dp"
                 android:text="ADD TO WATCHED LIST"
                 android:textAlignment="center"
@@ -336,7 +335,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/details_tv_genres"
+                android:id="@+id/details_genres_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
@@ -361,7 +360,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/details_tv_production_countries"
+                android:id="@+id/details_production_countries_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
@@ -387,7 +386,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/details_tv_spoken_languages"
+                android:id="@+id/details_spoken_languages_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
@@ -419,7 +418,7 @@
                 android:background="#000" />
 
             <TextView
-                android:id="@+id/details_tv_overview"
+                android:id="@+id/details_overview_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingVertical="5dp"
@@ -457,20 +456,20 @@
                     android:layout_weight="1" />
 
                 <ImageView
-                    android:id="@+id/details_iv_trailer_1"
+                    android:id="@+id/details_trailer_1_image_view"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:contentDescription="Youtube Vid"
                     android:src="@drawable/place_holder_img" />
 
                 <Space
-                    android:id="@+id/details_space_between_trailers"
+                    android:id="@+id/details_between_trailers_space"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1" />
 
                 <TextView
-                    android:id="@+id/details_tv_no_trailers"
+                    android:id="@+id/details_no_trailers_text_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="15dp"
@@ -482,7 +481,7 @@
                     android:visibility="gone" />
 
                 <ImageView
-                    android:id="@+id/details_iv_trailer_2"
+                    android:id="@+id/details_trailer_2_image_view"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:contentDescription="Youtube Vid"

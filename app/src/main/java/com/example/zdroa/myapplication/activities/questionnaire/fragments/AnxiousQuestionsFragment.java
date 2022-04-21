@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import com.example.zdroa.myapplication.R;
 import com.example.zdroa.myapplication.activities.questionnaire.QuestionnaireActivity;
 
+// TODO: 22/04/2022 refactor everything
 public class AnxiousQuestionsFragment extends Fragment {
 
     private static int a1 = 0;

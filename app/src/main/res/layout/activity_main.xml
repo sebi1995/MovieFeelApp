@@ -7,54 +7,92 @@
     android:layout_height="match_parent"
     android:background="@color/appBgColor"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.example.zdroa.myapplication.MainActivity">
 
+    <!--    <ImageView-->
+    <!--        android:id="@+id/imageView"-->
+    <!--        android:layout_width="200dp"-->
+    <!--        android:layout_height="50dp"-->
+    <!--        android:layout_gravity="end"-->
+    <!--        android:layout_marginTop="70dp"-->
+    <!--        android:contentDescription="Movie database api logo."-->
+    <!--        app:srcCompat="@drawable/comply_to_tmdb_tac" />-->
+
     <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="20"/>
+
+    <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_gravity="center"
+        app:cardBackgroundColor="@color/whiteTextColor"
+        app:cardCornerRadius="200dp">
 
-    <ImageView
-        android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_gravity="end"
-        app:srcCompat="@drawable/comply_to_tmdb_tac"
-        android:id="@+id/imageView"
-        android:layout_weight="11598.17"
-        android:contentDescription="Movie database api logo." />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="30dp"
+            android:contentDescription="MovieFeel application logo."
+            app:srcCompat="@drawable/moviefeel_logo" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="20000"/>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/moviefeel_logo"
-        android:id="@+id/imageView2"
-        android:layout_weight="1"
-        android:contentDescription="MovieFeel application logo." />
-
-    <Button
-        android:id="@+id/main_b_navigate_to_login"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Log in" />
-
-    <Button
-        android:id="@+id/main_b_navigate_to_register"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Register" />
+    </androidx.cardview.widget.CardView>
 
     <Space
         android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/main_go_to_login_card_view"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="100000" />
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="20dp"
+        app:cardCornerRadius="35dp"
+        app:cardElevation="1dp"
+        app:cardUseCompatPadding="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Log in"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:layout_margin="5dp"
+            android:textColor="@color/black"
+            android:textSize="36sp"
+            android:textStyle="bold" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/main_go_to_register_card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="20dp"
+        app:cardCornerRadius="35dp"
+        app:cardElevation="1dp"
+        app:cardUseCompatPadding="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:textColor="@color/black"
+            android:text="Register"
+            android:textAlignment="center"
+            android:textSize="36sp"
+            android:textStyle="bold" />
+
+    </androidx.cardview.widget.CardView>
+
 
 </LinearLayout>

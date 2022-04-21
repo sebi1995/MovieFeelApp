@@ -15,6 +15,7 @@ import com.example.zdroa.myapplication.activities.questionnaire.fragments.Narcis
 import com.example.zdroa.myapplication.activities.questionnaire.fragments.ObsessiveQuestionsFragment;
 import com.example.zdroa.myapplication.activities.questionnaire.fragments.ParanoidQuestionsFragment;
 import com.example.zdroa.myapplication.activities.questionnaire.fragments.SchizoidQuestionsFragment;
+import com.google.common.collect.ImmutableMap;
 
 
 public class FragmentCommunicator extends FragmentStatePagerAdapter {
@@ -23,37 +24,27 @@ public class FragmentCommunicator extends FragmentStatePagerAdapter {
         super(fm);
     }
 
+    private static final ImmutableMap<Integer, Fragment> FRAGMENT_MAP = ImmutableMap.<Integer, Fragment>builder()
+            .put(0, new InitializerFragment())
+            .put(1, new AnxiousQuestionsFragment())
+            .put(2, new ParanoidQuestionsFragment())
+            .put(3, new HistrionicQuestionsFragment())
+            .put(4, new ObsessiveQuestionsFragment())
+            .put(5, new NarcissistQuestionsFragment())
+            .put(6, new SchizoidQuestionsFragment())
+            .put(7, new DepressiveQuestionsFragment())
+            .put(8, new DependentQuestionsFragment())
+            .put(9, new EndingQuestionsFragment())
+            .build();
+
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
-            case 0:
-                return new InitializerFragment();
-            case 1:
-                return new AnxiousQuestionsFragment();
-            case 2:
-                return new ParanoidQuestionsFragment();
-            case 3:
-                return new HistrionicQuestionsFragment();
-            case 4:
-                return new ObsessiveQuestionsFragment();
-            case 5:
-                return new NarcissistQuestionsFragment();
-            case 6:
-                return new SchizoidQuestionsFragment();
-            case 7:
-                return new DepressiveQuestionsFragment();
-            case 8:
-                return new DependentQuestionsFragment();
-            case 9:
-                return new EndingQuestionsFragment();
-        }
-        return null;
+        // TODO: 21/04/2022 investigate
+        return FRAGMENT_MAP.get(position);
     }
 
     @Override
     public int getCount() {
         return 10;
     }
-
-
 }

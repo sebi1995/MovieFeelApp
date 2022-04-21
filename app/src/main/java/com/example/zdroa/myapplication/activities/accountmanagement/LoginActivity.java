@@ -1,166 +1,171 @@
 package com.example.zdroa.myapplication.activities.accountmanagement;
 
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.USER_EMAIL;
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.USER_FIRSTNAME;
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.USER_ID;
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.USER_PASSWORD;
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.USER_PERSON_TYPE;
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.USER_SURNAME;
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.USER_TITLE;
-
-import android.app.ProgressDialog;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
+import android.os.CountDownTimer;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
-import com.android.volley.Response;
-import com.android.volley.toolbox.Volley;
+import com.example.zdroa.myapplication.ActivityNavigator;
+import com.example.zdroa.myapplication.BasicActivity;
 import com.example.zdroa.myapplication.R;
 import com.example.zdroa.myapplication.activities.main.HomeActivity;
-import com.example.zdroa.myapplication.handlers.HttpRequestHandler;
+import com.example.zdroa.myapplication.handlers.AnimatorHandler;
+import com.example.zdroa.myapplication.handlers.LoadingSpinner;
 import com.example.zdroa.myapplication.handlers.UserSessionHandler;
+import com.example.zdroa.myapplication.handlers.UserSessionHandler.UserType;
+import com.example.zdroa.myapplication.models.Movie;
+import com.example.zdroa.myapplication.models.User;
+import com.example.zdroa.myapplication.repositories.UserRepository;
+import com.example.zdroa.myapplication.services.UserService;
+import com.example.zdroa.myapplication.utilities.PersonType;
+import com.example.zdroa.myapplication.utils.AppSettings;
+import com.example.zdroa.myapplication.utils.Logger;
+import com.example.zdroa.myapplication.utils.MovieUtils;
+import com.google.gson.GsonBuilder;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.security.NoSuchAlgorithmException;
+import java.time.OffsetDateTime;
+import java.util.Arrays;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements BasicActivity, ActivityNavigator {
 
-    private LinearLayout loginLL;
-    private EditText usernameEt;
+    private EditText emailEt;
     private EditText passwordEt;
-    private UserSessionHandler userSession;
+    private UserSessionHandler userSessionHandler;
     private TextView errorMessageTv;
-    private Button registerButton;
-    private ProgressDialog progressDialog;
+    private Button loginBtn;
+    private LoadingSpinner loadingSpinner;
+    private RelativeLayout rootView;
+    private CardView loginCv;
+    private CardView appLogoCv;
+    private TextView registerTv;
+    private TextView forgotPasswordTv;
+    private UserService userService;
 
-
-    void checkFieldsForEmptyValues(Button button) {
-
-        String f1 = usernameEt.getText().toString();
-        String f2 = passwordEt.getText().toString();
-
-        if (f1.equals("") || f2.equals("")) {
-            button.setEnabled(false);
-        } else {
-            button.setEnabled(true);
-        }
-    }
+    public Logger logger = new Logger(LoginActivity.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        initViews();
 
-        userSession = new UserSessionHandler(getApplicationContext());
+        loadingSpinner = new LoadingSpinner(this, this.getWindow(), loginCv, rootView, true);
+        userSessionHandler = new UserSessionHandler(getApplicationContext().getSharedPreferences(AppSettings.USER_SESSION_SHARED_PREFERENCES, Context.MODE_PRIVATE), getApplicationContext().getSharedPreferences(AppSettings.USER_SESSION_SHARED_PREFERENCES, Context.MODE_PRIVATE).edit());
+        userService = new UserService(new UserRepository(getApplicationContext()));
 
-        registerButton = findViewById(R.id.login_b_login);
-        usernameEt = findViewById(R.id.login_et_username);
-        passwordEt = findViewById(R.id.login_et_password);
-        loginLL = findViewById(R.id.login_ll_login);
-        errorMessageTv = findViewById(R.id.login_tv_login_error);
+        doOnLoadAnimation();
 
+        registerTv.setOnClickListener(view -> {
+            launchActivityWithFinish(this, RegisterActivity.class);
+        });
 
-//        etUsername.setText("admin");
-//        etPassword.setText("admin123");
+        forgotPasswordTv.setOnClickListener(view -> {
+            logger.logError("To implement.");
+        });
 
-        TextWatcher checkIfFieldsAreFilledIn = new TextWatcher() {
+        LoginTextWatcher.AfterTextChangedAction changedTextAction = () -> loginBtn.setEnabled(
+                !TextUtils.isEmpty(emailEt.toString()) &&
+                        !TextUtils.isEmpty(passwordEt.getText())
+        );
 
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                // check Fields For Empty Values
-                checkFieldsForEmptyValues(registerButton);
-            }
-        };
-        usernameEt.addTextChangedListener(checkIfFieldsAreFilledIn);
-        passwordEt.addTextChangedListener(checkIfFieldsAreFilledIn);
-        checkFieldsForEmptyValues(registerButton);
+        emailEt.addTextChangedListener(new LoginTextWatcher(changedTextAction));
+        passwordEt.addTextChangedListener(new LoginTextWatcher(changedTextAction));
+        loginBtn.setOnClickListener(onLoginButtonClickListener());
     }
 
-    public void login_login(View v) {
-        View view = getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(LoginActivity.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-        loginLL.setVisibility(View.GONE);
-
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Loading....");
-        progressDialog.setTitle("Attempting to log in.");
-        progressDialog.setMax(100);
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-
-        final String username = usernameEt.getText().toString();
-        final String password = passwordEt.getText().toString();
-
-        // Response received from the server
-        Response.Listener<String> responseListener = response -> {
+    private View.OnClickListener onLoginButtonClickListener() {
+        return view -> {
+            // TODO: 03/04/2022 finish impl
+            hideKeyboard();
+            loadingSpinner.showAndHideParentViewAndDisableUserInput();
+            hideLogo();
             try {
-                JSONObject jsonResponse = new JSONObject(response);
-                boolean success = jsonResponse.getBoolean("success");
-                if (success) {
-
-                    userSession.setId(jsonResponse.getInt(USER_ID));
-                    userSession.setTitle(jsonResponse.getString(USER_TITLE));
-                    userSession.setFirstName(jsonResponse.getString(USER_FIRSTNAME));
-                    userSession.setSurname(jsonResponse.getString(USER_SURNAME));
-                    userSession.setEmail(jsonResponse.getString(USER_EMAIL));
-                    userSession.setPassword(jsonResponse.getString(USER_PASSWORD));
-                    userSession.setPersonType(jsonResponse.getString(USER_PERSON_TYPE));
-
-                    if (progressDialog.isShowing()) {
-                        progressDialog.dismiss();
-                    }
-                    LoginActivity.this.startActivity(new Intent(this, HomeActivity.class));
-                    finish();
-                } else {
-                    if (progressDialog.isShowing()) {
-                        progressDialog.dismiss();
-                    }
-                    loginLL.setVisibility(View.VISIBLE);
-                    errorMessageTv.append("Login Failed:\n" +
-                            "Wrong username or password.\n" +
-                            "Please check your credentials and try again.\n");
-                }
-
-            } catch (JSONException e) {
-                loginLL.setVisibility(View.VISIBLE);
-                progressDialog.dismiss();
-                Toast.makeText(this, "Error connecting to server.", Toast.LENGTH_SHORT);
-                e.printStackTrace();
+                userService.getByEmailAddressAndPassword(
+                        response -> {
+                            User user = new GsonBuilder().create().fromJson(response, User.class);
+                            user = new User(1).setFirstname("sebastian").setSurname("zdroana").setDateOfBirth(OffsetDateTime.MAX).setEmailAddress("s.zdroana@gmail.com").setPassword("test").setKey("adw#f3.3@2]f;awfAFWFd").setWatchedMoviesList(Arrays.asList(new Movie(1), new Movie(2), new Movie(3), new Movie(4), new Movie(5), new Movie(9), new Movie(14), new Movie(15), new Movie(16), new Movie(20), new Movie(22), new Movie(34), new Movie(33), new Movie(31), new Movie(50), new Movie(55), new Movie(44))).setUserType(UserType.USER).setPersonType(PersonType.PARANOID);
+                            if (userSessionHandler.createSession(user.getUid(), user.getFirstname(), user.getSurname(), user.getDateOfBirth(), user.getEmailAddress(), user.getPassword(), user.getKey(), user.getUserType(), user.getPersonType(), user.getWatchedMoviesList())) {
+                                launchActivityWithFinish(this, HomeActivity.class);
+                            } else {
+                                // TODO: 15/04/2022 display some sort of error as session cannot be created, data is missing
+                                logger.logError("some value missing.");
+                                loadingSpinner.hideAndShowParentViewAndEnableUserInput();
+                                showLogo();
+                            }
+                        }, error -> {
+                            User user = new User(1).setFirstname("sebastian").setSurname("zdroana").setDateOfBirth(OffsetDateTime.MAX).setEmailAddress("s.zdroana@gmail.com").setPassword("test").setKey("adw#f3.3@2]f;awfAFWFd").setWatchedMoviesList(Arrays.asList(new Movie(1), new Movie(2), new Movie(3), new Movie(4), new Movie(5), new Movie(9), new Movie(14), new Movie(15), new Movie(16), new Movie(20), new Movie(22), new Movie(34), new Movie(33), new Movie(31), new Movie(50), new Movie(55), new Movie(44))).setUserType(UserType.USER).setPersonType(PersonType.PARANOID);
+                            if (userSessionHandler.createSession(user.getUid(), user.getFirstname(), user.getSurname(), user.getDateOfBirth(), user.getEmailAddress(), user.getPassword(), user.getKey(), user.getUserType(), user.getPersonType(), user.getWatchedMoviesList())) {
+                                launchActivityWithFinish(this, HomeActivity.class);
+                            } else {
+                                // TODO: 15/04/2022 display some sort of error as session cannot be created, data is missing
+                                logger.logError("some value missing.");
+                                loadingSpinner.hideAndShowParentViewAndEnableUserInput();
+                                showLogo();
+                            }
+                            errorMessageTv.setText(MovieUtils.convertToMultiLineString(Arrays.asList("Error connecting to login server, server may be down.", "Please try again later.")));
+                            logger.logError(error);
+                            loadingSpinner.hideAndShowParentViewAndEnableUserInput();
+//                            showLogo();
+                        },
+                        emailEt.getText().toString(),
+                        passwordEt.getText().toString());
+            } catch (NoSuchAlgorithmException e) {
+                logger.logError(e);
             }
         };
+    }
 
-        Response.ErrorListener errorListener = error -> {
-            if (progressDialog.isShowing()) {
-                progressDialog.dismiss();
+    private void showLogo() {
+        appLogoCv.setVisibility(View.VISIBLE);
+    }
+
+    private void hideLogo() {
+        appLogoCv.setVisibility(View.GONE);
+    }
+
+
+    private void hideKeyboard() {
+        if (this.getCurrentFocus() != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    private void doOnLoadAnimation() {
+        new CountDownTimer(1200, 1000) {
+            @Override
+            public void onTick(long l) {
+                AnimatorHandler.getMoveYAxisViewAnimation(appLogoCv, 5f, 1000).start();
+                AnimatorHandler.getShrinkAnimation(appLogoCv, 0.7f, 1000).start();
             }
-            loginLL.setVisibility(View.VISIBLE);
-            errorMessageTv.setText("Error connecting to service.");
-            Log.e(this.getClass().getName(), error.toString());
-        };
-        Volley.newRequestQueue(this).add(HttpRequestHandler.login(responseListener, username, password, errorListener));
+
+            @Override
+            public void onFinish() {
+                loginCv.setVisibility(View.VISIBLE);
+            }
+        }.start();
+    }
+
+    @Override
+    public void initViews() {
+        emailEt = findViewById(R.id.login_email_text_input_edit_text);
+        passwordEt = findViewById(R.id.login_password_text_input_edit_text);
+        rootView = findViewById(R.id.activity_login);
+        appLogoCv = findViewById(R.id.login_app_logo_card_view);
+        errorMessageTv = findViewById(R.id.login_error_text_view);
+        loginBtn = findViewById(R.id.login_button);
+        loginCv = findViewById(R.id.login_inputs_card_view);
+        registerTv = findViewById(R.id.login_register_text_view);
+        forgotPasswordTv = findViewById(R.id.login_forgot_password_text_view);
     }
 }

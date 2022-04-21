@@ -1,54 +1,74 @@
 package com.example.zdroa.myapplication.handlers;
 
-import android.content.Context;
+import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_DATE_OF_BIRTH;
+import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_EMAIL_ADDRESS;
+import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_FIRSTNAME;
+import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_KEY;
+import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_PASSWORD;
+import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_PERSON_TYPE;
+import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_SURNAME;
+import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_TYPE;
+import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_UID;
+import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_WATCHED_MOVIES_IDS;
+
 import android.content.SharedPreferences;
 
-import com.example.zdroa.myapplication.utils.AppSettings;
+import com.example.zdroa.myapplication.models.Movie;
+import com.example.zdroa.myapplication.utilities.PersonType;
+import com.example.zdroa.myapplication.utils.MovieUtils;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class UserSessionHandler {
 
-    private final SharedPreferences prefs;
+    private final SharedPreferences sharedPreferences;
     private final SharedPreferences.Editor editor;
 
-    public static final String USER_ID = "user_id";
-    public static final String USER_TITLE = "user_title";
-    public static final String USER_FIRSTNAME = "user_firstname";
-    public static final String USER_SURNAME = "user_surname";
-    public static final String USER_DATE_OF_BIRTH = "user_date_of_birth";
-    public static final String USER_EMAIL = "user_email";
-    public static final String USER_PASSWORD = "user_password";
-    public static final String USER_KEY = "user_key";
-    public static final String USER_PERSON_TYPE = "user_person_type";
-    public static final String USER_TYPE = "user_type";
-    public static final String USER_IDS_LIST = "ids_list";
-    public static final String USER_WATCHED_MOVIES = "watched_list";
+    protected enum ParamName {
+        USER_UID("uid"),
+        USER_FIRSTNAME("firstname"),
+        USER_SURNAME("surname"),
+        USER_DATE_OF_BIRTH("date_of_birth"),
+        USER_EMAIL_ADDRESS("email_address"),
+        USER_PASSWORD("password"),
+        USER_KEY("key"),
+        USER_PERSON_TYPE("person_type"),
+        USER_TYPE("user_type"),
+        USER_WATCHED_MOVIES_IDS("watched_movies_ids");
 
-    public UserSessionHandler(Context context) {
-        prefs = context.getSharedPreferences(AppSettings.USER_SESSION_SHARED_PREFERENCES, Context.MODE_PRIVATE);
-        editor = prefs.edit();
+        private final String paramName;
+
+        ParamName(String paramName) {
+            this.paramName = paramName;
+        }
+
+        @Override
+        public String toString() {
+            return this.paramName;
+        }
     }
 
-    public Integer getId() {
-        return getIntegerOrNull(USER_ID);
+    public UserSessionHandler(SharedPreferences sharedPreferences, SharedPreferences.Editor editor) {
+        this.sharedPreferences = sharedPreferences;
+        this.editor = editor;
     }
 
-    public void setId(Integer value) {
-        putIntegerOrNull(USER_ID, value);
+    public Integer getUid() {
+        return getIntegerOrNull(USER_UID);
     }
 
-    public String getTitle() {
-        return getStringOrNull(USER_TITLE);
-    }
-
-    public void setTitle(String value) {
-        putStringOrNull(USER_TITLE, value);
+    public void setUid(Integer value) {
+        putIntegerOrNull(USER_UID, value);
     }
 
     public String getFirstName() {
         return getStringOrNull(USER_FIRSTNAME);
     }
 
-    public void setFirstName(String value) {
+    public void setFirstname(String value) {
         putStringOrNull(USER_FIRSTNAME, value);
     }
 
@@ -68,12 +88,12 @@ public class UserSessionHandler {
         putStringOrNull(USER_DATE_OF_BIRTH, value);
     }
 
-    public String getEmail() {
-        return getStringOrNull(USER_EMAIL);
+    public String getEmailAddress() {
+        return getStringOrNull(USER_EMAIL_ADDRESS);
     }
 
-    public void setEmail(String value) {
-        putStringOrNull(USER_EMAIL, value);
+    public void setEmailAddress(String value) {
+        putStringOrNull(USER_EMAIL_ADDRESS, value);
     }
 
     public String getPassword() {
@@ -100,51 +120,103 @@ public class UserSessionHandler {
         putStringOrNull(USER_PERSON_TYPE, value);
     }
 
-    public String getUserType() {
-        return getStringOrNull(USER_TYPE);
+    public UserType getUserType() {
+        return Optional.ofNullable(getStringOrNull(USER_TYPE)).map(UserType::getType).orElse(UserType.USER);
     }
 
     public void setUserType(String value) {
         putStringOrNull(USER_TYPE, value);
     }
 
-    public String getIdsList() {
-        return getStringOrNull(USER_IDS_LIST);
+    public List<Integer> getWatchedMoviesIds() {
+        return MovieUtils.convertStringToIntegerList(getStringOrNull(USER_WATCHED_MOVIES_IDS));
     }
 
-    public void setIdsList(String value) {
-        putStringOrNull(USER_IDS_LIST, value);
+    public void setWatchedMovies(List<Movie> movies) {
+        putStringOrNull(USER_WATCHED_MOVIES_IDS,
+                MovieUtils.convertIntegerListToString(movies.stream().map(Movie::getId).collect(Collectors.toList())));
     }
 
-    public String getWatchedMovies() {
-        return getStringOrNull(USER_WATCHED_MOVIES);
+    public boolean hasCompletedQuestionnaire() {
+        return !hasNotCompletedQuestionnaire();
     }
 
-    public void setWatchedMovies(String value) {
-        putStringOrNull(USER_WATCHED_MOVIES, value);
+    public boolean hasNotCompletedQuestionnaire() {
+        return getPersonType() == null;
     }
 
-    private Integer getIntegerOrNull(String sharedPreferenceType) {
-        int anInt = prefs.getInt(sharedPreferenceType, -1);
+    public boolean sessionExists() {
+        return !sessionDoesNotExist();
+    }
+
+    public boolean sessionDoesNotExist() {
+        return getUid() == null;
+    }
+
+    private Integer getIntegerOrNull(ParamName paramName) {
+        int anInt = sharedPreferences.getInt(paramName.toString(), -1);
         return anInt < 0 ? null : anInt;
     }
 
-    private void putIntegerOrNull(String sharedPreferenceType, Integer value) {
-        editor.putInt(sharedPreferenceType, value);
+    private void putIntegerOrNull(ParamName paramName, Integer value) {
+        editor.putInt(paramName.toString(), value);
         editor.commit();
     }
 
-    private String getStringOrNull(String sharedPreferenceType) {
-        return prefs.getString(sharedPreferenceType, null);
+    private String getStringOrNull(ParamName paramName) {
+        return sharedPreferences.getString(paramName.toString(), null);
     }
 
-    private void putStringOrNull(String sharedPreferenceType, String value) {
-        editor.putString(sharedPreferenceType, value);
+    private void putStringOrNull(ParamName paramName, String value) {
+        editor.putString(paramName.toString(), value);
         editor.commit();
     }
 
-    public void clearAll() {
+    public boolean createSession(Integer uid, String firstname, String surname, OffsetDateTime dateOfBirth, String emailAddress, String password, String key, UserType userType, PersonType personType, List<Movie> watchedMoviesList) {
+        if (uid != null && firstname != null && surname != null && dateOfBirth != null && emailAddress != null && password != null && key != null && userType != null && personType != null) {
+            setUid(uid);
+            setFirstname(firstname);
+            setSurname(surname);
+            setDateOfBirth(dateOfBirth.toString());
+            setEmailAddress(emailAddress);
+            setPassword(password);
+            setKey(key);
+            setWatchedMovies(watchedMoviesList);
+            setUserType(userType.toString());
+            setPersonType(personType.toString());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void clearSession() {
         editor.clear();
         editor.commit();
+    }
+
+    public enum UserType {
+        ADMIN("admin"),
+        USER("user");
+
+        private final String value;
+
+        UserType(String value) {
+            this.value = value;
+        }
+
+        public static UserType getType(String type) {
+            for (UserType userType : UserType.values()) {
+                if (userType.value.equals(type)) {
+                    return userType;
+                }
+            }
+            return USER;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
     }
 }
