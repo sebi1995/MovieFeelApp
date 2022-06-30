@@ -1,5 +1,11 @@
 package com.example.zdroa.myapplication.activities.accountmanagement;
 
+import static com.example.zdroa.myapplication.utilities.RegistrationValidator.Validator.DATE_OF_BIRTH;
+import static com.example.zdroa.myapplication.utilities.RegistrationValidator.Validator.EMAIL_ADDRESS;
+import static com.example.zdroa.myapplication.utilities.RegistrationValidator.Validator.FIRSTNAME;
+import static com.example.zdroa.myapplication.utilities.RegistrationValidator.Validator.PASSWORD;
+import static com.example.zdroa.myapplication.utilities.RegistrationValidator.Validator.SURNAME;
+
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
@@ -11,20 +17,18 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.zdroa.myapplication.ActivityNavigator;
-import com.example.zdroa.myapplication.BasicActivity;
 import com.example.zdroa.myapplication.R;
 import com.example.zdroa.myapplication.repositories.UserRepository;
 import com.example.zdroa.myapplication.services.UserService;
-import com.example.zdroa.myapplication.utilities.MovieApiDateFormatter;
 import com.example.zdroa.myapplication.utilities.RegistrationValidator;
-import com.example.zdroa.myapplication.utilities.RegistrationValidator.Validator;
 import com.example.zdroa.myapplication.utils.Logger;
+import com.example.zdroa.myapplication.utils.MovieDateFormatter;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 
-public class RegisterActivity extends AppCompatActivity implements BasicActivity, ActivityNavigator {
+public class RegisterActivity extends AppCompatActivity implements ActivityNavigator {
 
     private Button registerBtn;
     private EditText firstnameEt;
@@ -43,7 +47,7 @@ public class RegisterActivity extends AppCompatActivity implements BasicActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         initViews();
-        userService = new UserService(new UserRepository(getApplicationContext()));
+        userService = new UserService(UserRepository.getInstance(getApplicationContext()));
 
 
         dateOfBirthEt.setOnClickListener(v -> {
@@ -53,7 +57,7 @@ public class RegisterActivity extends AppCompatActivity implements BasicActivity
                         calendar.set(Calendar.YEAR, year);
                         calendar.set(Calendar.MONTH, monthOfYear);
                         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        dateOfBirthEt.setText(MovieApiDateFormatter.format(calendar.getTime()));
+                        dateOfBirthEt.setText(MovieDateFormatter.format(calendar.getTime()));
                     },
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH),
@@ -76,11 +80,11 @@ public class RegisterActivity extends AppCompatActivity implements BasicActivity
                             registrationValidator.isPasswordValid());
         });
 
-        firstnameEt.addTextChangedListener(registrationValidator.createTextWatcher(Validator.FIRSTNAME, firstnameEt));
-        surnameEt.addTextChangedListener(registrationValidator.createTextWatcher(Validator.SURNAME, surnameEt));
-        dateOfBirthEt.addTextChangedListener(registrationValidator.createTextWatcher(Validator.DATE_OF_BIRTH, dateOfBirthEt));
-        emailAddressEt.addTextChangedListener(registrationValidator.createTextWatcher(Validator.EMAIL_ADDRESS, emailAddressEt));
-        passwordEt.addTextChangedListener(registrationValidator.createTextWatcher(Validator.PASSWORD, passwordEt, emailAddressEt));
+        firstnameEt.addTextChangedListener(registrationValidator.createTextWatcher(FIRSTNAME, firstnameEt));
+        surnameEt.addTextChangedListener(registrationValidator.createTextWatcher(SURNAME, surnameEt));
+        dateOfBirthEt.addTextChangedListener(registrationValidator.createTextWatcher(DATE_OF_BIRTH, dateOfBirthEt));
+        emailAddressEt.addTextChangedListener(registrationValidator.createTextWatcher(EMAIL_ADDRESS, emailAddressEt));
+        passwordEt.addTextChangedListener(registrationValidator.createTextWatcher(PASSWORD, passwordEt, emailAddressEt));
 
         registerBtn.setOnClickListener(view -> {
             try {
@@ -121,7 +125,6 @@ public class RegisterActivity extends AppCompatActivity implements BasicActivity
         });
     }
 
-    @Override
     public void initViews() {
         firstnameEt = findViewById(R.id.register_firstname_text_input_edit_text);
         surnameEt = findViewById(R.id.register_surname_text_input_edit_text);

@@ -1,4 +1,4 @@
-package com.example.zdroa.myapplication.repositories;
+package com.example.zdroa.myapplication.handlers;
 
 import static com.example.zdroa.myapplication.utils.AppSettings.API_HTTP_REQUEST_MAX_NUMBER_OF_RETRIES;
 import static com.example.zdroa.myapplication.utils.AppSettings.API_HTTP_REQUEST_TIMEOUT_AFTER_SECONDS;
@@ -28,6 +28,8 @@ public class WebAppRequestHandler {
     public static final String MOVIE_ID = "movieId";
     public static final String MOVIE_IDS = "movieIds";
     public static final String LIMIT = "limit";
+    public static final String QUESTIONNAIRE_DURATION_TIME = "questionnaireDurationTime";
+    public static final String PERSON_TYPE = "personType";
 
     private final Context context;
 
@@ -51,8 +53,8 @@ public class WebAppRequestHandler {
         addToQueue(createStringRequest(Request.Method.DELETE, url, responseListener, errorListener, params));
     }
 
-    protected StringRequest createStringRequest(int requestType, String url, Response.Listener<String> onResponseStringListener, Response.ErrorListener errorListener, Supplier<Map<String, String>> paramsSupplier) {
-        return new StringRequest(requestType, url,onResponseStringListener, errorListener) {
+    private StringRequest createStringRequest(int requestType, String url, Response.Listener<String> onResponseStringListener, Response.ErrorListener errorListener, Supplier<Map<String, String>> paramsSupplier) {
+        return new StringRequest(requestType, url, onResponseStringListener, errorListener) {
             @NonNull
             @Override
             protected Map<String, String> getParams() {

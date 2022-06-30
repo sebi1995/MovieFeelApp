@@ -1,6 +1,15 @@
 package com.example.zdroa.myapplication.communicators;
 
 
+import static com.example.zdroa.myapplication.utilities.PersonType.ANXIOUS;
+import static com.example.zdroa.myapplication.utilities.PersonType.DEPENDANT;
+import static com.example.zdroa.myapplication.utilities.PersonType.DEPRESSIVE;
+import static com.example.zdroa.myapplication.utilities.PersonType.HISTRIONIC;
+import static com.example.zdroa.myapplication.utilities.PersonType.NARCISSIST;
+import static com.example.zdroa.myapplication.utilities.PersonType.OBSESSIVE;
+import static com.example.zdroa.myapplication.utilities.PersonType.PARANOID;
+import static com.example.zdroa.myapplication.utilities.PersonType.SCHIZOID;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -15,17 +24,24 @@ import com.example.zdroa.myapplication.activities.questionnaire.fragments.Narcis
 import com.example.zdroa.myapplication.activities.questionnaire.fragments.ObsessiveQuestionsFragment;
 import com.example.zdroa.myapplication.activities.questionnaire.fragments.ParanoidQuestionsFragment;
 import com.example.zdroa.myapplication.activities.questionnaire.fragments.SchizoidQuestionsFragment;
+import com.example.zdroa.myapplication.utilities.PersonType;
+import com.example.zdroa.myapplication.utils.Logger;
 import com.google.common.collect.ImmutableMap;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class FragmentCommunicator extends FragmentStatePagerAdapter {
+
+    private static final Logger LOGGER = new Logger(FragmentCommunicator.class);
 
     public FragmentCommunicator(FragmentManager fm) {
         super(fm);
     }
 
-    private static final ImmutableMap<Integer, Fragment> FRAGMENT_MAP = ImmutableMap.<Integer, Fragment>builder()
-            .put(0, new InitializerFragment())
+    private static final ImmutableMap<Integer, Fragment> fragmentMap = ImmutableMap.<Integer, Fragment>builder()
+            .put(InitializerFragment.INDEX, new InitializerFragment())
             .put(1, new AnxiousQuestionsFragment())
             .put(2, new ParanoidQuestionsFragment())
             .put(3, new HistrionicQuestionsFragment())
@@ -36,11 +52,14 @@ public class FragmentCommunicator extends FragmentStatePagerAdapter {
             .put(8, new DependentQuestionsFragment())
             .put(9, new EndingQuestionsFragment())
             .build();
-
     @Override
     public Fragment getItem(int position) {
-        // TODO: 21/04/2022 investigate
-        return FRAGMENT_MAP.get(position);
+        Fragment fragment = fragmentMap.get(position);
+        if (fragment == null) {
+            LOGGER.logError("Position: " + position + " doesn't exist.");
+            return new InitializerFragment();
+        }
+        return fragment;
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.example.zdroa.myapplication.activities.main.movies;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.example.zdroa.myapplication.activities.main.movies.details.MovieDetailsActivity;
 import com.example.zdroa.myapplication.utils.AppSettings;
 import com.example.zdroa.myapplication.utils.Logger;
 import com.example.zdroa.myapplication.utils.MovieUtils;
@@ -12,6 +11,7 @@ import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class MovieActivityNavigator {
@@ -69,8 +69,9 @@ public class MovieActivityNavigator {
                 .beautify(fn == null ? intent.getStringExtra(valueName) : fn.apply(intent));
     }
 
-    public static Integer extractMovieId(Intent intent) {
-        return intent.getIntExtra(MOVIE_ID, -1);
+    public static Optional<Integer> extractMovieId(Intent intent) {
+        Integer extra = intent.getIntExtra(MOVIE_ID, -1);
+        return extra == -1 ? Optional.empty() : Optional.of(extra);
     }
 
     private enum MovieDetailsValueBeautifier {
@@ -140,11 +141,19 @@ public class MovieActivityNavigator {
         GENRES(MovieActivityNavigator.GENRES) {
             @Override
             public String beautify(Object objectToBeautify) {
-                if (!(objectToBeautify instanceof List) || ((List<?>) objectToBeautify).isEmpty()) {
-                    LOGGER.logError("erroqwdkpqwokdpkd");
-                    return AppSettings.NO_INFO_AVAILABLE;
-                }
-                return MovieUtils.convertToMultiLineString((List<String>) objectToBeautify);
+                return beautifyList(objectToBeautify);
+            }
+        },
+        PRODUCTION_COUNTRIES(MovieActivityNavigator.PRODUCTION_COUNTRIES) {
+            @Override
+            public String beautify(Object objectToBeautify) {
+                return beautifyList(objectToBeautify);
+            }
+        },
+        SPOKEN_LANGUAGES(MovieActivityNavigator.SPOKEN_LANGUAGES) {
+            @Override
+            public String beautify(Object objectToBeautify) {
+                return null;
             }
         },
         DEFAULT(MovieActivityNavigator.DEFAULT_NO_VALUE) {
@@ -157,14 +166,21 @@ public class MovieActivityNavigator {
             }
         };
 
-
-        private String value;
+        private final String value;
 
         MovieDetailsValueBeautifier(String value) {
             this.value = value;
         }
 
         public abstract String beautify(Object objectToBeautify);
+
+        public String beautifyList(Object objectToBeautify) {
+            if (!(objectToBeautify instanceof List) || ((List<?>) objectToBeautify).isEmpty()) {
+                LOGGER.logError("erroqwdkpqwokdpkd");
+                return AppSettings.NO_INFO_AVAILABLE;
+            }
+            return MovieUtils.convertToMultiLineString((List<String>) objectToBeautify);
+        }
 
         public static MovieDetailsValueBeautifier getBeautifier(String value) {
             for (MovieDetailsValueBeautifier converter : values()) {

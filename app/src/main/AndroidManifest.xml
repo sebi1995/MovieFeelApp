@@ -44,7 +44,7 @@
             android:launchMode="singleInstance"
             android:screenOrientation="fullSensor" />
         <activity
-            android:name=".activities.main.movies.details.MovieDetailsActivity"
+            android:name=".activities.main.movies.MovieDetailsActivity"
             android:launchMode="singleInstance"
             android:screenOrientation="fullSensor" />
         <activity android:name=".activities.main.movies.WatchedMoviesActivity" />

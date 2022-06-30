@@ -11,7 +11,11 @@
     <color name="colorProgressBar">#FFCE511C</color>
     <color name="colorTextView">#83898E</color>
 
-    <color name="themeColor">#11CFC5</color>
+    <color name="appThemeColour">#11CFC5</color>
+
+    <color name="questionnaireQuestionNotAnsweredColour">#FF9090</color>
+    <color name="questionnaireQuestionAnsweredColour">#04ff00</color>
+<!--    <color name="questionnaireQuestionAnsweredColour">#88FF74</color>-->
 
     <!--normal colors-->
     <color name="darkTextColor">#020000</color>

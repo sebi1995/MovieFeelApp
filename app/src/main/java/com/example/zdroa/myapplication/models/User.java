@@ -1,6 +1,6 @@
 package com.example.zdroa.myapplication.models;
 
-import com.example.zdroa.myapplication.handlers.UserSessionHandler.UserType;
+import com.example.zdroa.myapplication.handlers.UserSession.UserType;
 import com.example.zdroa.myapplication.utilities.PersonType;
 
 import java.time.OffsetDateTime;
@@ -19,6 +19,7 @@ public class User {
     private List<Movie> watchedMoviesList;
     private UserType userType;
     private PersonType personType;
+    private OffsetDateTime lastActiveTime;
 
     public User() {
 
@@ -128,6 +129,15 @@ public class User {
 
     public User setWatchedMoviesList(List<Movie> watchedMoviesList) {
         this.watchedMoviesList = watchedMoviesList;
+        return this;
+    }
+
+    public OffsetDateTime getLastActiveTime() {
+        return lastActiveTime;
+    }
+
+    public User setLastActiveTime(OffsetDateTime lastActiveTime) {
+        this.lastActiveTime = lastActiveTime;
         return this;
     }
 }

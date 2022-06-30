@@ -2,6 +2,7 @@ package com.example.zdroa.myapplication.services;
 
 import com.android.volley.Response;
 import com.example.zdroa.myapplication.repositories.WebAppMovieRepository;
+import com.example.zdroa.myapplication.utils.AppSettings;
 import com.example.zdroa.myapplication.utils.Logger;
 import com.google.gson.Gson;
 
@@ -17,8 +18,8 @@ public class WebAppMovieService {
         this.logger = logger;
     }
 
-    public void fetchStartingFromIdAndLimit(Response.Listener<String> onResponseListener, Response.ErrorListener onErrorListener, int startingMovieId, int limit) {
-        movieRepository.fetchStartingFromIdAndLimit(onResponseListener, onErrorListener, String.valueOf(startingMovieId), String.valueOf(limit));
+    public void fetchStartingFromIdAndLimit(Response.Listener<String> onResponseListener, Response.ErrorListener onErrorListener, int startingMovieId) {
+        movieRepository.fetchStartingFromIdAndLimit(onResponseListener, onErrorListener, String.valueOf(startingMovieId), String.valueOf(AppSettings.MOVIES_TO_DISPLAY_LIMIT_PER_PAGE));
     }
 
     public void fetchByIds(Response.Listener<String> onResponseListener, Response.ErrorListener onErrorListener, List<Integer> userWatchedMoviesIds) {

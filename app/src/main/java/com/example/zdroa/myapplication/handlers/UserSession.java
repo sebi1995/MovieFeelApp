@@ -1,17 +1,23 @@
 package com.example.zdroa.myapplication.handlers;
 
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_DATE_OF_BIRTH;
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_EMAIL_ADDRESS;
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_FIRSTNAME;
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_KEY;
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_PASSWORD;
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_PERSON_TYPE;
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_SURNAME;
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_TYPE;
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_UID;
-import static com.example.zdroa.myapplication.handlers.UserSessionHandler.ParamName.USER_WATCHED_MOVIES_IDS;
+import static com.example.zdroa.myapplication.handlers.UserSession.ParamName.LAST_ACTIVE_TIME;
+import static com.example.zdroa.myapplication.handlers.UserSession.ParamName.USER_DATE_OF_BIRTH;
+import static com.example.zdroa.myapplication.handlers.UserSession.ParamName.USER_EMAIL_ADDRESS;
+import static com.example.zdroa.myapplication.handlers.UserSession.ParamName.USER_FIRSTNAME;
+import static com.example.zdroa.myapplication.handlers.UserSession.ParamName.USER_KEY;
+import static com.example.zdroa.myapplication.handlers.UserSession.ParamName.USER_PASSWORD;
+import static com.example.zdroa.myapplication.handlers.UserSession.ParamName.USER_PERSON_TYPE;
+import static com.example.zdroa.myapplication.handlers.UserSession.ParamName.USER_SURNAME;
+import static com.example.zdroa.myapplication.handlers.UserSession.ParamName.USER_TYPE;
+import static com.example.zdroa.myapplication.handlers.UserSession.ParamName.USER_UID;
+import static com.example.zdroa.myapplication.handlers.UserSession.ParamName.USER_WATCHED_MOVIES_IDS;
+import static com.example.zdroa.myapplication.handlers.UserSession.SessionCreationStatus.SESSION_CREATED;
+import static com.example.zdroa.myapplication.handlers.UserSession.SessionCreationStatus.SESSION_CREATED_QUESTIONNAIRE_NOT_COMPLETED;
+import static com.example.zdroa.myapplication.handlers.UserSession.SessionCreationStatus.SESSION_NOT_CREATED;
 
 import android.content.SharedPreferences;
+
+import androidx.annotation.NonNull;
 
 import com.example.zdroa.myapplication.models.Movie;
 import com.example.zdroa.myapplication.utilities.PersonType;
@@ -22,36 +28,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class UserSessionHandler {
+public class UserSession {
 
     private final SharedPreferences sharedPreferences;
     private final SharedPreferences.Editor editor;
 
-    protected enum ParamName {
-        USER_UID("uid"),
-        USER_FIRSTNAME("firstname"),
-        USER_SURNAME("surname"),
-        USER_DATE_OF_BIRTH("date_of_birth"),
-        USER_EMAIL_ADDRESS("email_address"),
-        USER_PASSWORD("password"),
-        USER_KEY("key"),
-        USER_PERSON_TYPE("person_type"),
-        USER_TYPE("user_type"),
-        USER_WATCHED_MOVIES_IDS("watched_movies_ids");
-
-        private final String paramName;
-
-        ParamName(String paramName) {
-            this.paramName = paramName;
-        }
-
-        @Override
-        public String toString() {
-            return this.paramName;
-        }
-    }
-
-    public UserSessionHandler(SharedPreferences sharedPreferences, SharedPreferences.Editor editor) {
+    public UserSession(SharedPreferences sharedPreferences, SharedPreferences.Editor editor) {
         this.sharedPreferences = sharedPreferences;
         this.editor = editor;
     }
@@ -116,8 +98,12 @@ public class UserSessionHandler {
         return getStringOrNull(USER_PERSON_TYPE);
     }
 
-    public void setPersonType(String value) {
-        putStringOrNull(USER_PERSON_TYPE, value);
+    public void setPersonType(PersonType personType) {
+        putStringOrNull(USER_PERSON_TYPE, personType == null ? "" : personType.toString());
+    }
+    public void setPersonType(List<PersonType> personType) {
+        // TODO: 06/05/2022 test???
+        putStringOrNull(USER_PERSON_TYPE, personType == null ? "" : personType.stream().map(pType -> String.valueOf(pType.getIndex())).reduce((s, s2) -> s + s2).get());
     }
 
     public UserType getUserType() {
@@ -135,6 +121,14 @@ public class UserSessionHandler {
     public void setWatchedMovies(List<Movie> movies) {
         putStringOrNull(USER_WATCHED_MOVIES_IDS,
                 MovieUtils.convertIntegerListToString(movies.stream().map(Movie::getId).collect(Collectors.toList())));
+    }
+
+    public Optional<OffsetDateTime> getLastActiveTime() {
+        return Optional.ofNullable(getStringOrNull(LAST_ACTIVE_TIME)).map(OffsetDateTime::parse);
+    }
+
+    public void setLastActiveTime(OffsetDateTime offsetDateTime) {
+        putStringOrNull(LAST_ACTIVE_TIME, offsetDateTime.toString());
     }
 
     public boolean hasCompletedQuestionnaire() {
@@ -172,8 +166,8 @@ public class UserSessionHandler {
         editor.commit();
     }
 
-    public boolean createSession(Integer uid, String firstname, String surname, OffsetDateTime dateOfBirth, String emailAddress, String password, String key, UserType userType, PersonType personType, List<Movie> watchedMoviesList) {
-        if (uid != null && firstname != null && surname != null && dateOfBirth != null && emailAddress != null && password != null && key != null && userType != null && personType != null) {
+    public SessionCreationStatus create(Integer uid, String firstname, String surname, OffsetDateTime dateOfBirth, String emailAddress, String password, String key, UserType userType, PersonType personType, List<Movie> watchedMoviesList, OffsetDateTime lastActiveTime) {
+        if (uid != null && firstname != null && surname != null && dateOfBirth != null && emailAddress != null && password != null && key != null && userType != null) {
             setUid(uid);
             setFirstname(firstname);
             setSurname(surname);
@@ -183,14 +177,25 @@ public class UserSessionHandler {
             setKey(key);
             setWatchedMovies(watchedMoviesList);
             setUserType(userType.toString());
-            setPersonType(personType.toString());
-            return true;
+            setLastActiveTime(lastActiveTime);
+            if (personType != null) {
+                setPersonType(personType);
+                return SESSION_CREATED;
+            } else {
+                return SESSION_CREATED_QUESTIONNAIRE_NOT_COMPLETED;
+            }
         } else {
-            return false;
+            return SESSION_NOT_CREATED;
         }
     }
 
-    public void clearSession() {
+    public enum SessionCreationStatus {
+        SESSION_CREATED,
+        SESSION_NOT_CREATED,
+        SESSION_CREATED_QUESTIONNAIRE_NOT_COMPLETED;
+    }
+
+    public void clear() {
         editor.clear();
         editor.commit();
     }
@@ -217,6 +222,32 @@ public class UserSessionHandler {
         @Override
         public String toString() {
             return value;
+        }
+    }
+
+    protected enum ParamName {
+        USER_UID("uid"),
+        USER_FIRSTNAME("firstname"),
+        USER_SURNAME("surname"),
+        USER_DATE_OF_BIRTH("date_of_birth"),
+        USER_EMAIL_ADDRESS("email_address"),
+        USER_PASSWORD("password"),
+        USER_KEY("key"),
+        USER_PERSON_TYPE("person_type"),
+        USER_TYPE("user_type"),
+        USER_WATCHED_MOVIES_IDS("watched_movies_ids"),
+        LAST_ACTIVE_TIME("last_active_time");
+
+        private final String paramName;
+
+        ParamName(String paramName) {
+            this.paramName = paramName;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return this.paramName;
         }
     }
 }

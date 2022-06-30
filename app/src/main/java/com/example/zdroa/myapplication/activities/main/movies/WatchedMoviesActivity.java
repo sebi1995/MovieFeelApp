@@ -1,23 +1,8 @@
 package com.example.zdroa.myapplication.activities.main.movies;
 
-import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.IS_ADULT;
-import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.MOVIE_ID;
-import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.ORIGINAL_LANGUAGE;
-import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.OVERVIEW;
-import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.POSTER_PATH;
-import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.PRODUCTION_COUNTRIES;
-import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.RELEASE_DATE;
-import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.RELEASE_STATUS;
-import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.RUNTIME;
-import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.SPOKEN_LANGUAGES;
-import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.TITLE;
-import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.VOTE_AVERAGE;
-import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.YOUTUBE_LINKS;
-import static com.example.zdroa.myapplication.utils.AppSettings.MAX_MOVIES_PER_PAGE;
-
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,12 +10,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.zdroa.myapplication.ActivityNavigator;
-import com.example.zdroa.myapplication.BasicActivity;
 import com.example.zdroa.myapplication.R;
-import com.example.zdroa.myapplication.activities.main.movies.details.MovieDetailsActivity;
 import com.example.zdroa.myapplication.handlers.LoadingSpinner;
-import com.example.zdroa.myapplication.handlers.UserSessionHandler;
+import com.example.zdroa.myapplication.handlers.UserSession;
 import com.example.zdroa.myapplication.models.Movie;
+import com.example.zdroa.myapplication.models.moviesubmodels.Genre;
 import com.example.zdroa.myapplication.models.moviesubmodels.ProductionCountry;
 import com.example.zdroa.myapplication.models.moviesubmodels.Result;
 import com.example.zdroa.myapplication.models.moviesubmodels.SpokenLanguage;
@@ -38,16 +22,14 @@ import com.example.zdroa.myapplication.repositories.RestApiRepository;
 import com.example.zdroa.myapplication.repositories.UserRepository;
 import com.example.zdroa.myapplication.services.RestApiMovieService;
 import com.example.zdroa.myapplication.services.UserService;
-import com.example.zdroa.myapplication.utilities.MoviesListViewAdaptor;
+import com.example.zdroa.myapplication.utils.MovieLvAdaptor;
 import com.example.zdroa.myapplication.utils.AppSettings;
 import com.example.zdroa.myapplication.utils.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class WatchedMoviesActivity extends AppCompatActivity implements BasicActivity, ActivityNavigator {
+public class WatchedMoviesActivity extends AppCompatActivity implements ActivityNavigator {
 
     private ListView moviesLv;
     private ImageView previousIv;
@@ -55,10 +37,15 @@ public class WatchedMoviesActivity extends AppCompatActivity implements BasicAct
     private TextView pageTitleTv;
     private LoadingSpinner loadingSpinner;
 
-    public UserSessionHandler userSessionHandler;
+    public UserSession userSession;
 
     public RestApiMovieService restApiMovieService;
+
     public UserService userService;
+
+    List<Integer> userWatchedMoviesIds;
+
+    MoviesViewModel moviesViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,41 +53,26 @@ public class WatchedMoviesActivity extends AppCompatActivity implements BasicAct
         setContentView(R.layout.activity_movies);
         initViews();
 
-        userSessionHandler = new UserSessionHandler(getApplicationContext().getSharedPreferences(AppSettings.USER_SESSION_SHARED_PREFERENCES, Context.MODE_PRIVATE), getApplicationContext().getSharedPreferences(AppSettings.USER_SESSION_SHARED_PREFERENCES, Context.MODE_PRIVATE).edit());
-        redirectIfSessionDoesNotMeetRequirements(userSessionHandler, this);
-        userService = new UserService(new UserRepository(getApplicationContext()));
-        restApiMovieService = new RestApiMovieService(new RestApiRepository(getApplicationContext()), new Logger(RestApiMovieService.class));
-        loadingSpinner = new LoadingSpinner(this, this.getWindow(), moviesLv, findViewById(R.id.activity_movies), true);
+        moviesViewModel = new MoviesViewModel();
+        userSession = new UserSession(getApplicationContext().getSharedPreferences(AppSettings.USER_SESSION_SHARED_PREFERENCES, Context.MODE_PRIVATE), getApplicationContext().getSharedPreferences(AppSettings.USER_SESSION_SHARED_PREFERENCES, Context.MODE_PRIVATE).edit());
+        userService = new UserService(UserRepository.getInstance(getApplicationContext()));
+        restApiMovieService = new RestApiMovieService(RestApiRepository.getInstance(getApplicationContext()), new Logger(RestApiMovieService.class));
+        // TODO: 24/04/2022 check this
+        loadingSpinner = new LoadingSpinner(this, this.getWindow(), moviesLv, findViewById(R.id.activity_movies));
         pageTitleTv.setText("Watched Movies");
+        userWatchedMoviesIds = userSession.getWatchedMoviesIds();
 
-        AtomicInteger currentPage = new AtomicInteger(0);
-        List<Movie> cachedWatchedMovies = new ArrayList<>();
         moviesLv.setOnItemClickListener((parent, view, position, id) -> {
-            Movie movie = cachedWatchedMovies.get(position + (currentPage.get() * MAX_MOVIES_PER_PAGE));
-            startActivity(
-                    new Intent(this, MovieDetailsActivity.class)
-                            .putExtra(MOVIE_ID, movie.getId())
-                            .putExtra(TITLE, movie.getTitle())
-                            .putExtra(POSTER_PATH, movie.getPosterPath())
-                            .putExtra(IS_ADULT, movie.getAdult())
-                            .putExtra(OVERVIEW, movie.getOverview())
-                            .putExtra(RUNTIME, movie.getRuntime())
-                            .putExtra(RELEASE_STATUS, movie.getStatus())
-                            .putExtra(RELEASE_DATE, movie.getReleaseDate())
-                            .putExtra(VOTE_AVERAGE, movie.getVoteAverage())
-                            .putExtra(ORIGINAL_LANGUAGE, movie.getOriginalLanguage())
-                            .putStringArrayListExtra(PRODUCTION_COUNTRIES, (ArrayList<String>) movie.getProductionCountries().stream().map(ProductionCountry::getName).collect(Collectors.toList()))
-                            .putStringArrayListExtra(SPOKEN_LANGUAGES, (ArrayList<String>) movie.getSpokenLanguages().stream().map(SpokenLanguage::getName).collect(Collectors.toList()))
-                            .putStringArrayListExtra(YOUTUBE_LINKS, (ArrayList<String>) movie.getYoutubeVideos().getVideos().stream().map(Result::getUrlEnd).collect(Collectors.toList()))
-            );
+            Movie movie = moviesViewModel.getCachedMovieForCurrentPageByPosition(position);
+            MovieActivityNavigator.startMovieDetailsActivityWithParams(this, movie.getId(), movie.getTitle(), movie.getPosterPath(), movie.getAdult(), movie.getOverview(), movie.getRuntime(), movie.getStatus(), movie.getReleaseDate(), movie.getVoteAverage(), movie.getOriginalLanguage(),
+                    movie.getGenres().stream().map(Genre::getName).collect(Collectors.toList()),
+                    movie.getProductionCountries().stream().map(ProductionCountry::getName).collect(Collectors.toList()),
+                    movie.getSpokenLanguages().stream().map(SpokenLanguage::getName).collect(Collectors.toList()),
+                    movie.getYoutubeVideos().getVideos().stream().map(Result::getUrlEnd).collect(Collectors.toList()));
         });
-        List<Integer> userWatchedMoviesIds = userSessionHandler.getWatchedMoviesIds();
-        previousIv.setOnClickListener(view -> loadDataIntoListView(currentPage.decrementAndGet(), userWatchedMoviesIds, cachedWatchedMovies));
-        nextIv.setOnClickListener(view -> loadDataIntoListView(currentPage.incrementAndGet(), userWatchedMoviesIds, cachedWatchedMovies));
-        loadDataIntoListView(currentPage.get(), userWatchedMoviesIds, cachedWatchedMovies);
+        fetchAndLoadDataIntoUiForCurrentPage();
     }
 
-    @Override
     public void initViews() {
         moviesLv = findViewById(R.id.movies_lvMovies);
         nextIv = findViewById(R.id.movies_next_results_image_view);
@@ -108,62 +80,71 @@ public class WatchedMoviesActivity extends AppCompatActivity implements BasicAct
         pageTitleTv = findViewById(R.id.movies_page_title_text_view);
     }
 
-    private void loadDataIntoListView(int currentPageNumber, List<Integer> watchedMoviesIds, List<Movie> cachedWatchedMovies) {
+    public void moviesNextResultsOnClick(View view) {
+        moviesViewModel.incrementPageNumber();
+        fetchAndLoadDataIntoUiForCurrentPage();
+    }
+
+    public void moviesPreviousResultsOnClick(View view) {
+        moviesViewModel.decrementPageNumber();
+        fetchAndLoadDataIntoUiForCurrentPage();
+    }
+
+    private void fetchAndLoadDataIntoUiForCurrentPage() {
         loadingSpinner.showAndHideParentViewAndDisableUserInput();
-        int startingIndex = currentPageNumber * MAX_MOVIES_PER_PAGE;
-        int endIndex = startingIndex + MAX_MOVIES_PER_PAGE;
-        if (endIndex <= cachedWatchedMovies.size()) {
-            updateListView(cachedWatchedMovies.subList(startingIndex, endIndex), watchedMoviesIds);
-            loadingSpinner.hideAndShowParentViewAndEnableUserInput();
-            if (currentPageNumber == 1) {
-                setPreviousEnabled();
+        if (moviesViewModel.canProvideDataFromCache()) {
+            if (moviesViewModel.isOnSecondPage()) {
+                enablePrevious();
             }
+            updateUiData(moviesViewModel.getSegmentedMoviesForCurrentPageNumber());
+            loadingSpinner.hideAndShowParentViewAndEnableUserInput();
         } else {
             restApiMovieService.fetchMoviesByIds(
-                    movies -> {
-                        cachedWatchedMovies.addAll(movies);
-                        //if there are more than 20 results, get the first 20 and enable next button
-                        if (cachedWatchedMovies.size() > MAX_MOVIES_PER_PAGE) {
-                            updateListView(cachedWatchedMovies.subList(startingIndex, endIndex), watchedMoviesIds);
-                            setNextEnabled();
+                    result -> {
+                        moviesViewModel.addToCachedMovies(result);
+                        if (moviesViewModel.lessCachedMoviesThanLimitPerPage()) {
+                            updateUiData(moviesViewModel.getCachedMovies());
+                            disableNext();
                         } else {
-                            //less than 20 results, get all results and disable next button
-                            updateListView(cachedWatchedMovies, watchedMoviesIds);
-                            setNextDisabled();
+                            updateUiData(moviesViewModel.getSegmentedMoviesForCurrentPageNumber());
+                            enableNext();
+                        }
+                        if (moviesViewModel.isOnSecondPage()) {
+                            enablePrevious();
                         }
                         loadingSpinner.hideAndShowParentViewAndEnableUserInput();
-                        if (currentPageNumber == 1) {
-                            setPreviousEnabled();
-                        }
                     },
-                    watchedMoviesIds
-            );
-        }
-        if (currentPageNumber == 0) {
-            setPreviousDisabled();
+                    userWatchedMoviesIds);
+            disablePreviousIfOnFirstPage();
         }
     }
 
-    private void updateListView(List<Movie> data, List<Integer> watchedMoviesIds) {
-        moviesLv.setAdapter(new MoviesListViewAdaptor(this, data, watchedMoviesIds));
+    private void disablePreviousIfOnFirstPage() {
+        if (moviesViewModel.isOnFirstPage()) {
+            disablePrevious();
+        }
     }
 
-    private void setNextEnabled() {
+    private void updateUiData(List<Movie> data) {
+        moviesLv.setAdapter(new MovieLvAdaptor(this, data));
+    }
+
+    void enableNext() {
         nextIv.setImageResource(R.mipmap.ic_next_results_enabled);
         nextIv.setEnabled(true);
     }
 
-    private void setNextDisabled() {
+    void disableNext() {
         nextIv.setImageResource(R.mipmap.ic_next_results_disabled);
         nextIv.setEnabled(false);
     }
 
-    private void setPreviousEnabled() {
+    void enablePrevious() {
         previousIv.setImageResource(R.mipmap.ic_previous_results_enabled);
         previousIv.setEnabled(true);
     }
 
-    private void setPreviousDisabled() {
+    void disablePrevious() {
         previousIv.setImageResource(R.mipmap.ic_previous_results_disabled);
         previousIv.setEnabled(false);
     }

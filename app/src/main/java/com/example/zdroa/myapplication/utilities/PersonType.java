@@ -1,35 +1,39 @@
 package com.example.zdroa.myapplication.utilities;
 
-import static com.example.zdroa.myapplication.utilities.MovieGenre.ACTION;
-import static com.example.zdroa.myapplication.utilities.MovieGenre.ADVENTURE;
-import static com.example.zdroa.myapplication.utilities.MovieGenre.ANIMATION;
-import static com.example.zdroa.myapplication.utilities.MovieGenre.COMEDY;
-import static com.example.zdroa.myapplication.utilities.MovieGenre.CRIME;
-import static com.example.zdroa.myapplication.utilities.MovieGenre.DRAMA;
-import static com.example.zdroa.myapplication.utilities.MovieGenre.FANTASY;
-import static com.example.zdroa.myapplication.utilities.MovieGenre.HORROR;
-import static com.example.zdroa.myapplication.utilities.MovieGenre.MYSTERY;
-import static com.example.zdroa.myapplication.utilities.MovieGenre.ROMANCE;
-import static com.example.zdroa.myapplication.utilities.MovieGenre.SCIENCE_FICTION;
-import static com.example.zdroa.myapplication.utilities.MovieGenre.THRILLER;
+import static com.example.zdroa.myapplication.utils.MovieGenre.ACTION;
+import static com.example.zdroa.myapplication.utils.MovieGenre.ADVENTURE;
+import static com.example.zdroa.myapplication.utils.MovieGenre.ANIMATION;
+import static com.example.zdroa.myapplication.utils.MovieGenre.COMEDY;
+import static com.example.zdroa.myapplication.utils.MovieGenre.CRIME;
+import static com.example.zdroa.myapplication.utils.MovieGenre.DRAMA;
+import static com.example.zdroa.myapplication.utils.MovieGenre.FANTASY;
+import static com.example.zdroa.myapplication.utils.MovieGenre.HORROR;
+import static com.example.zdroa.myapplication.utils.MovieGenre.MYSTERY;
+import static com.example.zdroa.myapplication.utils.MovieGenre.ROMANCE;
+import static com.example.zdroa.myapplication.utils.MovieGenre.SCIENCE_FICTION;
+import static com.example.zdroa.myapplication.utils.MovieGenre.THRILLER;
+
+import com.example.zdroa.myapplication.utils.MovieGenre;
 
 import java.util.Arrays;
 import java.util.List;
 
 public enum PersonType {
 
-    DEPENDANT(CRIME, DRAMA, ROMANCE, THRILLER),
-    DEPRESSIVE(ACTION, ADVENTURE, ANIMATION, COMEDY, FANTASY, ROMANCE),
-    SCHIZOID(CRIME, DRAMA, FANTASY, HORROR, SCIENCE_FICTION),
-    NARCISSIST(HORROR, THRILLER),
-    OBSESSIVE(ADVENTURE),
-    HISTRIONIC(ADVENTURE),
-    PARANOID(CRIME, HORROR, MYSTERY, SCIENCE_FICTION, THRILLER),
-    ANXIOUS(CRIME, DRAMA, ROMANCE, THRILLER);
+    ANXIOUS(1, CRIME, DRAMA, ROMANCE, THRILLER),
+    PARANOID(2, CRIME, HORROR, MYSTERY, SCIENCE_FICTION, THRILLER),
+    HISTRIONIC(3, ADVENTURE),
+    OBSESSIVE(4, ADVENTURE),
+    NARCISSIST(5, HORROR, THRILLER),
+    SCHIZOID(6, CRIME, DRAMA, FANTASY, HORROR, SCIENCE_FICTION),
+    DEPRESSIVE(7, ACTION, ADVENTURE, ANIMATION, COMEDY, FANTASY, ROMANCE),
+    DEPENDANT(8, CRIME, DRAMA, ROMANCE, THRILLER);
 
     private final MovieGenre[] genresToAvoid;
+    private final Integer index;
 
-    PersonType(MovieGenre... genresToAvoid) {
+    PersonType(Integer index, MovieGenre... genresToAvoid) {
+        this.index = index;
         this.genresToAvoid = genresToAvoid;
     }
 
@@ -42,8 +46,24 @@ public enum PersonType {
         return null;
     }
 
+    public static PersonType getByIndex(int index) {
+        for (PersonType personType : values()) {
+            if (personType.getIndex() == index) {
+                return personType;
+            }
+        }
+        return null;
+    }
+
+    public static int numberOfTypes() {
+        return values().length;
+    }
+
     public List<MovieGenre> getGenresToAvoid() {
         return Arrays.asList(genresToAvoid);
     }
 
+    public Integer getIndex() {
+        return index;
+    }
 }

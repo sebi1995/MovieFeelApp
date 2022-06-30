@@ -1,139 +1,197 @@
 package com.example.zdroa.myapplication.activities.questionnaire;
 
-import android.app.Activity;
+import static com.example.zdroa.myapplication.utilities.PersonType.ANXIOUS;
+import static com.example.zdroa.myapplication.utilities.PersonType.DEPENDANT;
+import static com.example.zdroa.myapplication.utilities.PersonType.DEPRESSIVE;
+import static com.example.zdroa.myapplication.utilities.PersonType.HISTRIONIC;
+import static com.example.zdroa.myapplication.utilities.PersonType.NARCISSIST;
+import static com.example.zdroa.myapplication.utilities.PersonType.OBSESSIVE;
+import static com.example.zdroa.myapplication.utilities.PersonType.PARANOID;
+import static com.example.zdroa.myapplication.utilities.PersonType.SCHIZOID;
+
+import android.content.Context;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.os.SystemClock;
+import android.view.View;
+import android.widget.Chronometer;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.zdroa.myapplication.ActivityNavigator;
 import com.example.zdroa.myapplication.R;
+import com.example.zdroa.myapplication.activities.questionnaire.fragments.InitializerFragment;
 import com.example.zdroa.myapplication.communicators.FragmentCommunicator;
+import com.example.zdroa.myapplication.handlers.LoadingSpinner;
+import com.example.zdroa.myapplication.handlers.UserSession;
+import com.example.zdroa.myapplication.repositories.UserRepository;
+import com.example.zdroa.myapplication.services.UserService;
+import com.example.zdroa.myapplication.utilities.PersonType;
+import com.example.zdroa.myapplication.utilities.PersonalityQuestionnaireAnswer;
+import com.example.zdroa.myapplication.utilities.PersonalityQuestionnaireQuestion;
+import com.example.zdroa.myapplication.utilities.QuestionnaireComponentCreator;
+import com.example.zdroa.myapplication.utils.AppSettings;
+import com.example.zdroa.myapplication.utils.Logger;
+import com.example.zdroa.myapplication.utils.MovieUtils;
+import com.google.common.collect.ImmutableMap;
 
-import java.util.Collections;
-import java.util.TreeMap;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class QuestionnaireActivity extends AppCompatActivity {
+import java.util.List;
+import java.util.Random;
+
+public class QuestionnaireActivity extends AppCompatActivity implements ActivityNavigator {
 
     ViewPager viewPager;
+    private UserService userService;
+    UserSession userSession;
+    public static final Logger LOGGER = new Logger(QuestionnaireActivity.class);
 
     public static FragmentCommunicator communicator;
 
-    private static int QUESTION_1_ANSWER;
-    private static int QUESTION_2_ANSWER;
-    private static int QUESTION_3_ANSWER;
-    private static int QUESTION_4_ANSWER;
-    private static int QUESTION_5_ANSWER;
-    private static int QUESTION_6_ANSWER;
-    private static int QUESTION_7_ANSWER;
-    private static int QUESTION_8_ANSWER;
-
-    private static TreeMap<Integer, Boolean> boolTreeMap = new TreeMap<>(/*Collections.<Integer>reverseOrder()*/);
-
-    public static Activity fa;
+    private Chronometer chronometer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questionnaire);
-        fa = this;
+        innitViews();
 
-        viewPager = (ViewPager) findViewById(R.id.vpQuestionsActivity);
-
+        userService = new UserService(UserRepository.getInstance(getApplicationContext()));
+        userSession = new UserSession(getApplicationContext().getSharedPreferences(AppSettings.USER_SESSION_SHARED_PREFERENCES, Context.MODE_PRIVATE), getApplicationContext().getSharedPreferences(AppSettings.USER_SESSION_SHARED_PREFERENCES, Context.MODE_PRIVATE).edit());
         communicator = new FragmentCommunicator(getSupportFragmentManager());
+
+        chronometer.setBase(SystemClock.elapsedRealtime());
+        chronometer.start();
+
         viewPager.setAdapter(communicator);
-        viewPager.setOffscreenPageLimit(10);
-        viewPager.setCurrentItem(0);
+        viewPager.setOffscreenPageLimit(PersonType.values().length);
+        viewPager.setCurrentItem(InitializerFragment.INDEX);
     }
 
-    public void setPagerFragment(int a) {
-        viewPager.setCurrentItem(a);
+    private void innitViews() {
+        chronometer = findViewById(R.id.questionnaire_timer_chronometer);
+        viewPager = findViewById(R.id.questionnaire_container_view_pager);
     }
 
-    public static void setQuestionAnswer(int question, int questionAnswer) {
-        switch (question) {
-            case 1:
-                QUESTION_1_ANSWER = questionAnswer;
-                break;
-            case 2:
-                QUESTION_2_ANSWER = questionAnswer;
-                break;
-            case 3:
-                QUESTION_3_ANSWER = questionAnswer;
-                break;
-            case 4:
-                QUESTION_4_ANSWER = questionAnswer;
-                break;
-            case 5:
-                QUESTION_5_ANSWER = questionAnswer;
-                break;
-            case 6:
-                QUESTION_6_ANSWER = questionAnswer;
-                break;
-            case 7:
-                QUESTION_7_ANSWER = questionAnswer;
-                break;
-            case 8:
-                QUESTION_8_ANSWER = questionAnswer;
-                break;
+    private static final ImmutableMap<PersonType, Integer> PERSON_TYPE_ROOT_LAYOUTS_MAP = ImmutableMap.<PersonType, Integer>builder()
+            .put(ANXIOUS, R.id.fragment_anxious_linear_layout)
+            .put(PARANOID, R.id.fragment_paranoid_linear_layout)
+            .put(HISTRIONIC, R.id.fragment_histrionic_linear_layout)
+            .put(OBSESSIVE, R.id.fragment_obsessive_linear_layout)
+            .put(NARCISSIST, R.id.fragment_narcissist_linear_layout)
+            .put(SCHIZOID, R.id.fragment_schizoid_linear_layout)
+            .put(DEPRESSIVE, R.id.fragment_depressive_linear_layout)
+            .put(DEPENDANT, R.id.fragment_dependent_linear_layout)
+            .build();
+
+    public static void createQuestionnaireFragment(PersonType personType, View view) {
+        Integer resourceId = PERSON_TYPE_ROOT_LAYOUTS_MAP.get(personType);
+        if (resourceId == null) {
+            LOGGER.logError("Resource id for " + personType.toString() + " not present in PERSON_TYPE_ROOT_LAYOUTS_MAP.");
+            return;
         }
-    }
-
-    public static TreeMap<Integer, Integer> getQuestionAnswer() {
-        TreeMap<Integer, Integer> map = new TreeMap<>(Collections.<Integer>reverseOrder());
-
-        map.put(1, QUESTION_1_ANSWER);
-        map.put(2, QUESTION_2_ANSWER);
-        map.put(3, QUESTION_3_ANSWER);
-        map.put(4, QUESTION_4_ANSWER);
-        map.put(5, QUESTION_5_ANSWER);
-        map.put(6, QUESTION_6_ANSWER);
-        map.put(7, QUESTION_7_ANSWER);
-        map.put(8, QUESTION_8_ANSWER);
-
-        return map;
-    }
-
-    public static void setBoolTreeMap(int n, Boolean b) {
-        boolTreeMap.put(n, b);
-    }
-
-    public static boolean getBoolTreeMapItem(int position) {
-        return boolTreeMap.get(position);
-    }
-
-    public static TreeMap<Integer, Boolean> getBoolTreeMap() {
-        return boolTreeMap;
+        LinearLayout rootLayout = view.findViewById(resourceId);
+        List<PersonalityQuestionnaireQuestion> questions = QuestionnaireResultsHandler.getQuestions(personType);
+        if (questions.isEmpty()) {
+            LOGGER.logError("No questions found for " + personType.toString());
+        } else {
+            QuestionnaireComponentCreator.createQuestionnaire(view.getContext(), personType, questions, rootLayout);
+        }
     }
 
     @Override
     public void onBackPressed() {
-        Toast.makeText(
-                fa,
-                "Please go back to the first screen to cancel.",
-                Toast.LENGTH_LONG).show();
+        MovieUtils.showLongToast(this, "Please go back to the first screen and press the exit button quit and save progress.");
     }
 
-    /*
-    28 - Action
-    12 - Adventure
-    16 - Animation
-    35 - Comedy
-    80 - Crime
-    99 - Documentary
-    18 - Drama
-    10751 - Family
-    14 - Fantasy
-    36 - History
-    27 - Horror
-    10402 - Music
-    9648 - Mystery
-    10749 - Romance
-    878 - Science Fiction
-    10770 - TV Movie
-    53 - Thriller
-    10752 - War
-    37 - Western
-    */
+    public void questionnaireExitButtonOnClick(View view) {
+        LOGGER.logInfo("Exiting personality questionnaire.");
+        // TODO: 06/05/2022 save progress?
+        finish();
+    }
 
+
+    LoadingSpinner loadingSpinner;
+    CardView mainCv;
+    RelativeLayout rootView;
+
+    public void questionnaireFinishButtonOnClick(View view) {
+        mainCv = (CardView) getOrInitAndGet(mainCv, R.id.fragment_ending_main_card_view);
+        rootView = (RelativeLayout) getOrInitAndGet(rootView, R.id.fragment_ending);
+        if (loadingSpinner == null) {
+            if (mainCv == null) {
+                LOGGER.logError("mainCv was not initialized.");
+            }
+            if (rootView == null) {
+                LOGGER.logError("rootView was not initialized.");
+            }
+            loadingSpinner = new LoadingSpinner(this, this.getWindow(), mainCv, rootView);
+        }
+        // TODO: 16/05/2022 remove?
+        randomAnswer();
+
+        loadingSpinner.showAndHideParentViewAndDisableUserInput();
+        if (QuestionnaireResultsHandler.allQuestionsAreAnswered()) {
+            chronometer.stop();
+            long questionnaireDuration = SystemClock.elapsedRealtime() - chronometer.getBase();
+//                timerDuration = timerDuration.substring(0, timerDuration.length() - 3);
+            List<PersonType> personType = QuestionnaireResultsHandler.calculateResultPersonType();
+            userService.registerQuestionnaire(
+                    response -> {
+                        //response true or false for save status
+                        //if true update person type in userSession
+                        //then redirect to home
+                        try {
+                            if (new JSONObject(response).getBoolean("success")) {
+                                userSession.setPersonType(personType);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        loadingSpinner.hideAndShowParentViewAndEnableUserInput();
+                    },
+                    error -> {
+                        LOGGER.logError(error);
+                        //print error?
+                        //ask for forgiveness
+                        //save the answers somewhere
+                        //try again later?
+//                        new AlertDialog.Builder(this).setMessage("fail")
+//                                .setNegativeButton("Retry", null)
+//                                .create()
+//                                .show();
+                        loadingSpinner.hideAndShowParentViewAndEnableUserInput();
+                    },
+                    userSession.getUid(),
+                    questionnaireDuration,
+                    personType
+            );
+        } else {
+            viewPager.setCurrentItem(QuestionnaireResultsHandler.getIndexForFirstFragmentWithUnAnsweredQuestion());
+            loadingSpinner.hideAndShowParentViewAndEnableUserInput();
+        }
+    }
+
+    private View getOrInitAndGet(View view, int id) {
+        if (view == null) {
+            return findViewById(id);
+        }
+        return view;
+    }
+
+    private void randomAnswer() {
+        for (PersonType personType : PersonType.values()) {
+            for (PersonalityQuestionnaireQuestion question : QuestionnaireResultsHandler.getQuestions(personType)) {
+                int randomIndex = new Random().nextInt(PersonalityQuestionnaireAnswer.getValidAnswers().size()) + 1;
+                PersonalityQuestionnaireAnswer.getByIndex(randomIndex).ifPresent(answer -> {
+                    QuestionnaireResultsHandler.setAnswerForQuestion(personType, question, answer);
+                });
+            }
+        }
+    }
 }

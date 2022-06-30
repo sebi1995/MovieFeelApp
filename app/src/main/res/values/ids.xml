@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="anxious_questions" type="id" />
+    <item name="paranoid_questions" type="id" />
+    <item name="histrionic_questions" type="id" />
+    <item name="obsessive_questions" type="id" />
+    <item name="narcissist_questions" type="id" />
+    <item name="schizoid_questions" type="id" />
+    <item name="depressive_questions" type="id" />
+    <item name="dependent_questions" type="id" />
+</resources>

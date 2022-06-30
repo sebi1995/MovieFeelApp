@@ -2,53 +2,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/fragment_ending"
     android:background="@color/appBgColor"
+    android:orientation="vertical"
     tools:context=".activities.questionnaire.fragments.EndingQuestionsFragment">
 
-    <TextView
-        android:id="@+id/ending_tv_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#fff"
-        android:padding="16dp"
-        android:text="The End"
-        android:textAlignment="center"
-        android:textColor="#000"
-        android:textSize="30sp" />
-
-    <TextView
-        android:id="@+id/ending_tv_message"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/ending_tv_title"
-        android:layout_marginTop="30dp"
-        android:padding="16dp"
-        android:text="Now that you have answered all the questions please click the Finish button.\n\nIf any questions have been left unanswered you will be taken back to the screen with the missing answeres. Your other answeres will not be affected."
-        android:textAlignment="center"
-        android:textColor="#000"
-        android:textSize="20sp" />
-
-    <Chronometer
-        android:id="@+id/ending_chronometer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/ending_tv_message"
-        android:layout_marginTop="30dp"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/bGotoMainAreaActivity"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/fragment_ending_main_card_view"
+        cardBackgroundColor="@color/colorSplashText"
+        cardCornerRadius="40dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="30dp"
-        android:text="Finish" />
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="100dp">
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/ending_tv_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="Now that you have answered all the questions please click the Finish button.\n\nIf any questions have been left unanswered you will be taken back to the screen with the missing answeres. Your other answeres will not be affected."
+                android:textAlignment="center"
+                android:textColor="#000"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/bGotoMainAreaActivity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:onClick="questionnaireFinishButtonOnClick"
+                android:text="Finish" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 </RelativeLayout>

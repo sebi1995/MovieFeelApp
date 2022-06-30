@@ -3,12 +3,22 @@ package com.example.zdroa.myapplication.repositories;
 import android.content.Context;
 
 import com.android.volley.Response;
+import com.example.zdroa.myapplication.handlers.WebAppRequestHandler;
 import com.example.zdroa.myapplication.utils.RequestUrls;
 import com.google.common.collect.ImmutableMap;
 
 public class WebAppMovieRepository extends WebAppRequestHandler {
 
-    public WebAppMovieRepository(Context context) {
+    private static WebAppMovieRepository instance = null;
+
+    public static WebAppMovieRepository getInstance(Context context) {
+        if (instance == null){
+            instance = new WebAppMovieRepository(context);
+        }
+        return instance;
+    }
+
+    private WebAppMovieRepository(Context context) {
         super(context);
     }
 

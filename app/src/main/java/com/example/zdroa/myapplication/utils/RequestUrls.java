@@ -20,8 +20,9 @@ public class RequestUrls {
     public static final String WEB_APP_USER_RESET_PASSWORD_URL = WEB_APP_BASE_URL + "user/reset";
     public static final String WEB_APP_USER_FORGOT_PASSWORD_URL = WEB_APP_BASE_URL + "user/forgot/password";
     public static final String WEB_APP_USER_FETCH_BY_EMAIL_AND_PASSWORD_URL = WEB_APP_BASE_URL + "user/login";
-    public static final String WEB_APP_USER_REMOVE_MOVIE_FROM_WATCHED_BY_USER_UID_AND_MOVIE_ID = "user/remove/movie/watched";
-    public static final String WEB_APP_USER_ADD_MOVIE_FROM_WATCHED_BY_USER_UID_AND_MOVIE_ID = "user/add/movie/watched";
+    public static final String WEB_APP_USER_REMOVE_MOVIE_FROM_WATCHED_BY_USER_UID_AND_MOVIE_ID = WEB_APP_BASE_URL + "user/remove/movie/watched";
+    public static final String WEB_APP_USER_ADD_MOVIE_FROM_WATCHED_BY_USER_UID_AND_MOVIE_ID = WEB_APP_BASE_URL + "user/add/movie/watched";
+    public static final String WEB_APP_USER_REGISTER_QUESTIONNAIRE = WEB_APP_BASE_URL + "user/register/questionnaire";
 
     public static final String WEB_APP_FETCH_MOVIE_BY_ID_URL = WEB_APP_BASE_URL + "movies/id";
     public static final String WEB_APP_FETCH_MOVIES_BY_IDS_URL = WEB_APP_BASE_URL + "movies/id/multiple";

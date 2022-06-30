@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,15 +13,16 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/fragment_initializer_iv_cancel"
+            android:id="@+id/initializer_fragment_exit_image_view"
             android:layout_width="wrap_content"
+            android:onClick="questionnaireExitButtonOnClick"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
             android:background="#fff"
             android:src="@mipmap/ic_cancel" />
 
         <TextView
-            android:id="@+id/fragment_initializer_tv_title"
+            android:id="@+id/initializer_fragment_page_title_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#fff"
@@ -33,17 +35,22 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/initializer_tv_welcome_msg"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_horizontal|center_vertical"
-        android:paddingBottom="8dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="8dp"
-        android:text="ewweaeawea"
-        android:textColor="#000"
-        android:textSize="18sp" />
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:cardCornerRadius="20dp">
+
+        <TextView
+            android:id="@+id/initializer_fragment_welcome_message_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|center_vertical"
+            android:layout_margin="20dp"
+            android:text="This will be the hardest part of using MovieFeel!\n\nPlease respond to the following statements as accurately as possible.\n\nThis will help MovieFeel determine what type of movies to suggest to help you in your needs.\n\nYour responses are very important and completely private, meaning that no one will be able to see your answers.\n\nYou may start by swiping to the next screens. You may go back to previous questions at any time."
+            android:textColor="#000"
+            android:textSize="18sp" />
+    </androidx.cardview.widget.CardView>
+
 
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.example.zdroa.myapplication.utilities;
+package com.example.zdroa.myapplication.utils;
 
 public enum MovieGenre {
 

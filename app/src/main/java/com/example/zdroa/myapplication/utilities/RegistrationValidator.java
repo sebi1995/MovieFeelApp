@@ -1,11 +1,17 @@
 package com.example.zdroa.myapplication.utilities;
 
+import static com.example.zdroa.myapplication.utils.AppSettings.MAX_REGISTRATION_PASSWORD_LENGTH;
+import static com.example.zdroa.myapplication.utils.AppSettings.MIN_REGISTRATION_PASSWORD_LENGTH;
+
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
 import com.example.zdroa.myapplication.utils.MovieUtils;
 import com.google.common.collect.ImmutableMap;
+
+import java.time.OffsetDateTime;
+import java.util.regex.Pattern;
 
 public class RegistrationValidator {
 
@@ -96,7 +102,7 @@ public class RegistrationValidator {
             }
 
             @Override
-            public String getErrorMessageOrNull(String firstname, String otherEtStringValue) {
+            public String getErrorMessageOrNull(String ignored, String otherIgnored) {
                 isFirstnameValid = true;
                 return null;
             }
@@ -121,7 +127,7 @@ public class RegistrationValidator {
             }
 
             @Override
-            public String getErrorMessageOrNull(String surname, String otherEtStringValue) {
+            public String getErrorMessageOrNull(String ignored, String otherIgnored) {
                 isSurnameValid = true;
                 return null;
             }
@@ -133,13 +139,16 @@ public class RegistrationValidator {
                     isDateOfBirthValid = false;
                     return "Please enter your date of birth.";
                 }
-                // TODO: 02/04/2022 add more validations
+                if (!MovieUtils.isUserOver18(OffsetDateTime.parse(dateOfBirth))) {
+                    isDateOfBirthValid = false;
+                    return "You must be over 18.";
+                }
                 isDateOfBirthValid = true;
                 return null;
             }
 
             @Override
-            public String getErrorMessageOrNull(String mainEtStringValue, String otherEtStringValue) {
+            public String getErrorMessageOrNull(String ignored, String otherIgnored) {
                 isDateOfBirthValid = true;
                 return null;
             }
@@ -177,20 +186,31 @@ public class RegistrationValidator {
             }
 
             @Override
-            public String getErrorMessageOrNull(String password, String emailAddressEtTextValue) {
+            public String getErrorMessageOrNull(String password, String emailAddress) {
                 if (TextUtils.isEmpty(password)) {
                     isPasswordValid = false;
                     return "Password cannot be empty.";
                 }
-                if (password.length() < 4) {
+
+                boolean containsNumber = Pattern.compile("[0-9]").matcher(password).find();
+                if (!containsNumber) {
                     isPasswordValid = false;
-                    return "Password cannot be less than 3 characters.";
+                    return "Password must contain at least 1 number.";
                 }
-                if (password.length() > 12) {
+                boolean containsSymbols = Pattern.compile("[^a-z0-9 ]").matcher(password).find();
+                if (!containsSymbols) {
                     isPasswordValid = false;
-                    return "Password cannot be more than 12 characters.";
+                    return "Password must contain at least 1 symbol.";
                 }
-                if (emailAddressEtTextValue.contains(password)) {
+                if (password.length() < MIN_REGISTRATION_PASSWORD_LENGTH) {
+                    isPasswordValid = false;
+                    return "Password cannot be less than " + MIN_REGISTRATION_PASSWORD_LENGTH + " characters.";
+                }
+                if (password.length() > MAX_REGISTRATION_PASSWORD_LENGTH) {
+                    isPasswordValid = false;
+                    return "Password cannot be more than " + MAX_REGISTRATION_PASSWORD_LENGTH + " characters.";
+                }
+                if (emailAddress.startsWith(password) || emailAddress.contains(password) || emailAddress.endsWith(password)) {
                     isPasswordValid = false;
                     return "Password cannot be similar to email.";
                 }

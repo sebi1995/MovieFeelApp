@@ -21,7 +21,7 @@ public class LoadingSpinner extends ProgressBar {
         super(context);
     }
 
-    public LoadingSpinner(Context context, Window window, ViewGroup parentView, ViewGroup rootView, boolean hideOnInit) {
+    public LoadingSpinner(Context context, Window window, ViewGroup parentView, ViewGroup rootView) {
         super(context, null, android.R.attr.progressBarStyleLarge);
         this.window = window;
         this.parentView = parentView;
@@ -30,10 +30,8 @@ public class LoadingSpinner extends ProgressBar {
         params.addRule(RelativeLayout.CENTER_IN_PARENT);
         super.setLayoutParams(params);
         this.addToLayout(rootView);
-        if (hideOnInit) {
-            this.hide();
-            this.enableUserInput();
-        }
+        this.hide();
+        this.enableUserInput();
     }
 
     public void addToLayout(ViewGroup rootView) {

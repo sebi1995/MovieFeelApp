@@ -3,12 +3,22 @@ package com.example.zdroa.myapplication.repositories;
 import android.content.Context;
 
 import com.android.volley.Response;
+import com.example.zdroa.myapplication.handlers.WebAppRequestHandler;
 import com.example.zdroa.myapplication.utils.RequestUrls;
 import com.google.common.collect.ImmutableMap;
 
 public class UserRepository extends WebAppRequestHandler {
 
-    public UserRepository(Context context) {
+    private static UserRepository instance = null;
+
+    public static UserRepository getInstance(Context context) {
+        if (instance == null) {
+            instance = new UserRepository(context);
+        }
+        return instance;
+    }
+
+    private UserRepository(Context context) {
         super(context);
     }
 
@@ -47,5 +57,15 @@ public class UserRepository extends WebAppRequestHandler {
                         .put(USER_UID, userUid)
                         .put(MOVIE_ID, movieId)
                         .build());
+    }
+
+    public void registerQuestionnaire(Response.Listener<String> responseListener, Response.ErrorListener errorListener, String userUid, String durationTime, String personType) {
+        doPostRequest(RequestUrls.WEB_APP_USER_REGISTER_QUESTIONNAIRE, responseListener, errorListener, () ->
+                ImmutableMap.<String, String>builder()
+                        .put(USER_UID, userUid)
+                        .put(QUESTIONNAIRE_DURATION_TIME, durationTime)
+                        .put(PERSON_TYPE, personType)
+                        .build()
+        );
     }
 }

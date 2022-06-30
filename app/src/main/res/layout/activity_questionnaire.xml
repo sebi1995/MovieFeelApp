@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.zdroa.myapplication.QuestionnaireActivity">
+    tools:context="com.example.zdroa.myapplication.activities.questionnaire.QuestionnaireActivity">
 
     <androidx.viewpager.widget.ViewPager
-        android:id="@+id/vpQuestionsActivity"
+        android:id="@+id/questionnaire_container_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     </androidx.viewpager.widget.ViewPager>
 
-</LinearLayout>
+    <Chronometer
+        android:id="@+id/questionnaire_timer_chronometer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:textSize="30sp"
+        android:visibility="gone"
+        android:textStyle="bold" />
+
+</RelativeLayout>

@@ -1,14 +1,12 @@
-package com.example.zdroa.myapplication.utilities;
-
-import com.example.zdroa.myapplication.utils.Logger;
+package com.example.zdroa.myapplication.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class MovieApiDateFormatter {
+public class MovieDateFormatter {
 
-    private static Logger LOGGER = new Logger(MovieApiDateFormatter.class);
+    private static Logger LOGGER = new Logger(MovieDateFormatter.class);
 
     public static String format(Date date) {
         try {

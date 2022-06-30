@@ -1,5 +1,6 @@
-package com.example.zdroa.myapplication.activities.main.movies.details;
+package com.example.zdroa.myapplication.activities.main.movies;
 
+import static android.graphics.Color.RED;
 import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.GENRES;
 import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.IS_ADULT;
 import static com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator.ORIGINAL_LANGUAGE;
@@ -25,10 +26,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.zdroa.myapplication.BasicActivity;
 import com.example.zdroa.myapplication.R;
-import com.example.zdroa.myapplication.activities.main.movies.MovieActivityNavigator;
-import com.example.zdroa.myapplication.handlers.UserSessionHandler;
+import com.example.zdroa.myapplication.handlers.UserSession;
 import com.example.zdroa.myapplication.repositories.UserRepository;
 import com.example.zdroa.myapplication.services.UserService;
 import com.example.zdroa.myapplication.utils.AppSettings;
@@ -37,12 +36,13 @@ import com.example.zdroa.myapplication.utils.MovieUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
-public class MovieDetailsActivity extends AppCompatActivity implements BasicActivity {
+public class MovieDetailsActivity extends AppCompatActivity {
 
 
-    private UserSessionHandler userSessionHandler;
+    private UserSession userSession;
     TextView movieTitleTv;
     TextView releaseStatusTv;
     TextView releaseDateTv;
@@ -67,11 +67,11 @@ public class MovieDetailsActivity extends AppCompatActivity implements BasicActi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
         initViews();
-        userSessionHandler = new UserSessionHandler(getApplicationContext().getSharedPreferences(AppSettings.USER_SESSION_SHARED_PREFERENCES, Context.MODE_PRIVATE), getApplicationContext().getSharedPreferences(AppSettings.USER_SESSION_SHARED_PREFERENCES, Context.MODE_PRIVATE).edit());
-        userService = new UserService(new UserRepository(getApplicationContext()));
+        userSession = new UserSession(getApplicationContext().getSharedPreferences(AppSettings.USER_SESSION_SHARED_PREFERENCES, Context.MODE_PRIVATE), getApplicationContext().getSharedPreferences(AppSettings.USER_SESSION_SHARED_PREFERENCES, Context.MODE_PRIVATE).edit());
+        userService = new UserService(UserRepository.getInstance(getApplicationContext()));
         logger = new Logger(MovieDetailsActivity.class);
 
-        addToWatchedListTv.setTextColor(Color.RED);
+        addToWatchedListTv.setTextColor(RED);
 
 //        new getWatchedListFromDB().execute();
 
@@ -89,42 +89,42 @@ public class MovieDetailsActivity extends AppCompatActivity implements BasicActi
         spokenLanguagesTv.setText(MovieActivityNavigator.extractBeautifiedValue(SPOKEN_LANGUAGES, intent));
         initTrailersSection(intent);
         addToWatchedListTv.setOnClickListener(view -> {
-//            userSessionHandler.getWatchedMoviesIds()
-            Integer movieId = MovieActivityNavigator.extractMovieId(intent);
-            if (movieId > 0) {
-                boolean foundAndRemovedMovieIdFromWatched = false;
-                for (int i = 0; i < userSessionHandler.getWatchedMoviesIds().size(); i++) {
-                    if (userSessionHandler.getWatchedMoviesIds().get(i).equals(movieId)) {
+            MovieActivityNavigator.extractMovieId(intent).ifPresent(movieId -> {
+                boolean movieIdNotInUserWatchedList = true;
+                Iterator<Integer> userWatchedMoviesIterator = userSession.getWatchedMoviesIds().iterator();
+                while (userWatchedMoviesIterator.hasNext()) {
+                    Integer iteratedMovieId = userWatchedMoviesIterator.next();
+                    if (iteratedMovieId.equals(movieId)) {
+                        movieIdNotInUserWatchedList = false;
                         userService.removeFromWatched(
                                 response -> {
-                                    userSessionHandler.getWatchedMoviesIds().remove(i);
+                                    userWatchedMoviesIterator.remove();
                                     addToWatchedListTv.setText("ADD TO WATCHED LIST");
-                                    addToWatchedListTv.setTextColor(Color.RED);
+                                    addToWatchedListTv.setTextColor(RED);
                                 }, error -> {
                                     logger.logError(error);
                                 },
-                                userSessionHandler.getUid(),
+                                userSession.getUid(),
                                 movieId);
+                        break;
                     }
-                    foundAndRemovedMovieIdFromWatched = true;
-                    break;
                 }
-                if (!foundAndRemovedMovieIdFromWatched) {
+                if (movieIdNotInUserWatchedList) {
                     userService.addToWatchedList(
                             response -> {
-                                userSessionHandler.getWatchedMoviesIds().add(movieId);
+                                userSession.getWatchedMoviesIds().add(movieId);
                                 addToWatchedListTv.setText("REMOVE FROM WATCHED LIST");
                                 addToWatchedListTv.setTextColor(Color.GREEN);
                             },
                             error -> {
                                 logger.logError(error);
                             },
-                            userSessionHandler.getUid(),
+                            userSession.getUid(),
                             movieId
 
                     );
                 }
-            }
+            });
         });
     }
 
@@ -165,7 +165,6 @@ public class MovieDetailsActivity extends AppCompatActivity implements BasicActi
         Picasso.with(this).load("http://image.tmdb.org/t/p/w300/" + poster).into(posterIv);
     }
 
-    @Override
     public void initViews() {
         addToWatchedListTv = findViewById(R.id.details_add_to_watched_list_text_view);
         noTrailersToShow = findViewById(R.id.details_no_trailers_text_view);

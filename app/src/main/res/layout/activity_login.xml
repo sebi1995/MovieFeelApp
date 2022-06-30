@@ -101,6 +101,7 @@
                         android:focusable="false"
                         android:layout_height="wrap_content"
                         android:text="Register"
+                        android:onClick="loginGoToRegisterActivityOnClick"
                         android:textColor="@color/colorProgressBar"
                         android:textSize="14sp"
                         android:textStyle="bold" />
@@ -112,6 +113,7 @@
                         android:focusable="false"
                         android:layout_gravity="end|center_vertical"
                         android:text="Forgot Password?"
+                        android:onClick="loginGoToForgotPasswordActivityOnClick"
                         android:textColor="@color/colorProgressBar"
                         android:textSize="14sp"
                         android:textStyle="bold" />
@@ -121,7 +123,8 @@
                 <Button
                     android:id="@+id/login_button"
                     style="@style/button"
-                    android:text="Sign in" />
+                    android:text="Sign in"
+                    android:onClick="loginButtonOnClick"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
