@@ -1,4 +1,4 @@
-package com.example.zdroa.myapplication.utilities;
+package com.example.zdroa.myapplication.activities.personalityquestionnaire;
 
 import android.content.Context;
 import android.view.View;
@@ -12,11 +12,13 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
 import com.example.zdroa.myapplication.R;
-import com.example.zdroa.myapplication.activities.questionnaire.QuestionnaireResultsHandler;
+import com.example.zdroa.myapplication.activities.personalityquestionnaire.models.PQAnswer;
+import com.example.zdroa.myapplication.activities.personalityquestionnaire.models.PQQuestion;
+import com.example.zdroa.myapplication.utilities.PersonType;
 
 import java.util.List;
 
-public class QuestionnaireComponentCreator {
+public class PQComponentCreator {
 
     private static CardView getCardView(Context context) {
         CardView cardView = new CardView(context);
@@ -57,17 +59,17 @@ public class QuestionnaireComponentCreator {
         return radioGroup;
     }
 
-    private static RadioButton getRadioButton(Context context, PersonalityQuestionnaireAnswer answer) {
+    private static RadioButton getRadioButton(Context context, PQAnswer answer) {
         RadioButton radioButton = new RadioButton(context);
         radioButton.setText(answer.getText());
         radioButton.setId(answer.getIndex());
         return radioButton;
     }
 
-    public static void createQuestionnaire(Context context, PersonType personType, List<PersonalityQuestionnaireQuestion> questions, LinearLayout rootLayout) {
+    public static void createFragmentComponent(Context context, PersonType personType, List<PQQuestion> questions, LinearLayout rootLayout) {
         for (int questionIndex = 0; questionIndex < questions.size(); questionIndex++) {
             //get the question
-            PersonalityQuestionnaireQuestion question = questions.get(questionIndex);
+            PQQuestion question = questions.get(questionIndex);
 
             //create the cardview
             CardView cardView = getCardView(context);
@@ -79,18 +81,25 @@ public class QuestionnaireComponentCreator {
             linearLayout.addView(getTitleTextView(context, question.getText()));
 
             //create radio group and add listener
-            RadioGroup radioGroup = getAnswersRadioGroup(context, questionIndex, (group, index) -> {
-                LinearLayout parent = (LinearLayout) group.getParent();
-                TextView titleTextView = (TextView) parent.getChildAt(0);
-                titleTextView.setBackgroundColor(ContextCompat.getColor(context, R.color.questionnaireQuestionAnsweredColour));
-                PersonalityQuestionnaireAnswer.getByIndex(index).ifPresent(answer -> {
-                    QuestionnaireResultsHandler.setAnswerForQuestion(personType, question, answer);
-                });
-            });
+            RadioGroup radioGroup = getAnswersRadioGroup(
+                    context,
+                    questionIndex,
+                    (group, index) -> {
+                        LinearLayout parent = (LinearLayout) group.getParent();
+                        TextView titleTextView = (TextView) parent.getChildAt(0);
+                        titleTextView.setBackgroundColor(ContextCompat.getColor(context, R.color.questionnaireQuestionAnsweredColour));
+                        PQAnswer.getByIndex(index).ifPresent(answer -> {
+                            try {
+                                PQHandler.setAnswerForQuestion(personType, question, answer);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+            );
 
             //add radio buttons to group
-            PersonalityQuestionnaireAnswer
-                    .getValidAnswers()
+            PQAnswer.getValidAnswers()
                     .stream()
                     .map(answer -> getRadioButton(context, answer))
                     .forEach(radioGroup::addView);

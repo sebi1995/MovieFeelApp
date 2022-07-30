@@ -1,4 +1,4 @@
-package com.example.zdroa.myapplication.utilities;
+package com.example.zdroa.myapplication.activities.personalityquestionnaire;
 
 
 import static com.example.zdroa.myapplication.utilities.PersonType.ANXIOUS;
@@ -10,13 +10,15 @@ import static com.example.zdroa.myapplication.utilities.PersonType.OBSESSIVE;
 import static com.example.zdroa.myapplication.utilities.PersonType.PARANOID;
 import static com.example.zdroa.myapplication.utilities.PersonType.SCHIZOID;
 
+import com.example.zdroa.myapplication.activities.personalityquestionnaire.models.PQQuestion;
+import com.example.zdroa.myapplication.utilities.PersonType;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PersonalityQuestionnaireQuestions {
+public class PQQuestions {
 
     private static final String ANXIOUS_QUESTION_ONE = "Worries keep me up at night";
     private static final String ANXIOUS_QUESTION_TWO = "The risk of missing my transport mean makes me feel awfully uncomfortable";
@@ -82,16 +84,40 @@ public class PersonalityQuestionnaireQuestions {
     private static final String DEPENDANT_QUESTION_SIX = "I never forget people and I don’t like to break away from anyone";
     private static final String DEPENDANT_QUESTION_SEVEN = "I often get told that I deserve more than I have";
 
-    public static final List<PersonalityQuestionnaireQuestion> ANXIOUS_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(ANXIOUS_QUESTION_ONE, ANXIOUS_QUESTION_TWO, ANXIOUS_QUESTION_THREE, ANXIOUS_QUESTION_FOUR, ANXIOUS_QUESTION_FIVE, ANXIOUS_QUESTION_SIX, ANXIOUS_QUESTION_SEVEN);
-    public static final List<PersonalityQuestionnaireQuestion> PARANOID_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(PARANOID_QUESTION_ONE, PARANOID_QUESTION_TWO, PARANOID_QUESTION_THREE, PARANOID_QUESTION_FOUR, PARANOID_QUESTION_FIVE, PARANOID_QUESTION_SIX, PARANOID_QUESTION_SEVEN);
-    public static final List<PersonalityQuestionnaireQuestion> HISTRIONIC_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(HISTRIONIC_QUESTION_ONE, HISTRIONIC_QUESTION_TWO, HISTRIONIC_QUESTION_THREE, HISTRIONIC_QUESTION_FOUR, HISTRIONIC_QUESTION_FIVE, HISTRIONIC_QUESTION_SIX, HISTRIONIC_QUESTION_SEVEN);
-    public static final List<PersonalityQuestionnaireQuestion> OBSESSIVE_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(OBSESSIVE_QUESTION_ONE, OBSESSIVE_QUESTION_TWO, OBSESSIVE_QUESTION_THREE, OBSESSIVE_QUESTION_FOUR, OBSESSIVE_QUESTION_FIVE, OBSESSIVE_QUESTION_SIX, OBSESSIVE_QUESTION_SEVEN);
-    public static final List<PersonalityQuestionnaireQuestion> NARCISSIST_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(NARCISSIST_QUESTION_ONE, NARCISSIST_QUESTION_TWO, NARCISSIST_QUESTION_THREE, NARCISSIST_QUESTION_FOUR, NARCISSIST_QUESTION_FIVE, NARCISSIST_QUESTION_SIX, NARCISSIST_QUESTION_SEVEN);
-    public static final List<PersonalityQuestionnaireQuestion> SCHIZOID_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(SCHIZOID_QUESTION_ONE, SCHIZOID_QUESTION_TWO, SCHIZOID_QUESTION_THREE, SCHIZOID_QUESTION_FOUR, SCHIZOID_QUESTION_FIVE, SCHIZOID_QUESTION_SIX, SCHIZOID_QUESTION_SEVEN);
-    public static final List<PersonalityQuestionnaireQuestion> DEPRESSIVE_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(DEPRESSIVE_QUESTION_ONE, DEPRESSIVE_QUESTION_TWO, DEPRESSIVE_QUESTION_THREE, DEPRESSIVE_QUESTION_FOUR, DEPRESSIVE_QUESTION_FIVE, DEPRESSIVE_QUESTION_SIX, DEPRESSIVE_QUESTION_SEVEN);
-    public static final List<PersonalityQuestionnaireQuestion> DEPENDANT_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(DEPENDANT_QUESTION_ONE, DEPENDANT_QUESTION_TWO, DEPENDANT_QUESTION_THREE, DEPENDANT_QUESTION_FOUR, DEPENDANT_QUESTION_FIVE, DEPENDANT_QUESTION_SIX, DEPENDANT_QUESTION_SEVEN);
+    private static final List<PQQuestion> ANXIOUS_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(ANXIOUS_QUESTION_ONE, ANXIOUS_QUESTION_TWO, ANXIOUS_QUESTION_THREE, ANXIOUS_QUESTION_FOUR, ANXIOUS_QUESTION_FIVE, ANXIOUS_QUESTION_SIX, ANXIOUS_QUESTION_SEVEN);
+    private static final List<PQQuestion> PARANOID_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(PARANOID_QUESTION_ONE, PARANOID_QUESTION_TWO, PARANOID_QUESTION_THREE, PARANOID_QUESTION_FOUR, PARANOID_QUESTION_FIVE, PARANOID_QUESTION_SIX, PARANOID_QUESTION_SEVEN);
+    private static final List<PQQuestion> HISTRIONIC_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(HISTRIONIC_QUESTION_ONE, HISTRIONIC_QUESTION_TWO, HISTRIONIC_QUESTION_THREE, HISTRIONIC_QUESTION_FOUR, HISTRIONIC_QUESTION_FIVE, HISTRIONIC_QUESTION_SIX, HISTRIONIC_QUESTION_SEVEN);
+    private static final List<PQQuestion> OBSESSIVE_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(OBSESSIVE_QUESTION_ONE, OBSESSIVE_QUESTION_TWO, OBSESSIVE_QUESTION_THREE, OBSESSIVE_QUESTION_FOUR, OBSESSIVE_QUESTION_FIVE, OBSESSIVE_QUESTION_SIX, OBSESSIVE_QUESTION_SEVEN);
+    private static final List<PQQuestion> NARCISSIST_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(NARCISSIST_QUESTION_ONE, NARCISSIST_QUESTION_TWO, NARCISSIST_QUESTION_THREE, NARCISSIST_QUESTION_FOUR, NARCISSIST_QUESTION_FIVE, NARCISSIST_QUESTION_SIX, NARCISSIST_QUESTION_SEVEN);
+    private static final List<PQQuestion> SCHIZOID_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(SCHIZOID_QUESTION_ONE, SCHIZOID_QUESTION_TWO, SCHIZOID_QUESTION_THREE, SCHIZOID_QUESTION_FOUR, SCHIZOID_QUESTION_FIVE, SCHIZOID_QUESTION_SIX, SCHIZOID_QUESTION_SEVEN);
+    private static final List<PQQuestion> DEPRESSIVE_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(DEPRESSIVE_QUESTION_ONE, DEPRESSIVE_QUESTION_TWO, DEPRESSIVE_QUESTION_THREE, DEPRESSIVE_QUESTION_FOUR, DEPRESSIVE_QUESTION_FIVE, DEPRESSIVE_QUESTION_SIX, DEPRESSIVE_QUESTION_SEVEN);
+    private static final List<PQQuestion> DEPENDANT_PERSON_TYPE_QUESTIONS = getPersonalityQuestionnaireQuestionsList(DEPENDANT_QUESTION_ONE, DEPENDANT_QUESTION_TWO, DEPENDANT_QUESTION_THREE, DEPENDANT_QUESTION_FOUR, DEPENDANT_QUESTION_FIVE, DEPENDANT_QUESTION_SIX, DEPENDANT_QUESTION_SEVEN);
 
-    private static List<PersonalityQuestionnaireQuestion> getPersonalityQuestionnaireQuestionsList(String... questions) {
-        return Arrays.stream(questions).map(PersonalityQuestionnaireQuestion::new).collect(Collectors.toList());
+    private static List<PQQuestion> getPersonalityQuestionnaireQuestionsList(String... questions) {
+        return Arrays.stream(questions).map(PQQuestion::new).collect(Collectors.toList());
+    }
+
+    private static final ImmutableMap<PersonType, List<PQQuestion>> PERSON_TYPE_QUESTIONS_MAP =
+            ImmutableMap.<PersonType, List<PQQuestion>>builder()
+                    .put(ANXIOUS, ANXIOUS_PERSON_TYPE_QUESTIONS)
+                    .put(PARANOID, PARANOID_PERSON_TYPE_QUESTIONS)
+                    .put(HISTRIONIC, HISTRIONIC_PERSON_TYPE_QUESTIONS)
+                    .put(NARCISSIST, NARCISSIST_PERSON_TYPE_QUESTIONS)
+                    .put(SCHIZOID, SCHIZOID_PERSON_TYPE_QUESTIONS)
+                    .put(DEPRESSIVE, DEPRESSIVE_PERSON_TYPE_QUESTIONS)
+                    .put(DEPENDANT, DEPENDANT_PERSON_TYPE_QUESTIONS)
+                    .put(OBSESSIVE, OBSESSIVE_PERSON_TYPE_QUESTIONS)
+                    .build();
+
+    public static ImmutableMap<PersonType, List<PQQuestion>> getQuestions() {
+        return PERSON_TYPE_QUESTIONS_MAP;
+    }
+
+    public static List<PQQuestion> getQuestions(PersonType personType) throws Exception {
+        List<PQQuestion> questions = PERSON_TYPE_QUESTIONS_MAP.get(personType);
+        if (questions == null) {
+            throw new Exception("No questions found for: " + personType + ".");
+        }
+        return questions;
     }
 }

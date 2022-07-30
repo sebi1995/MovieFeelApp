@@ -18,7 +18,7 @@ import androidx.cardview.widget.CardView;
 import com.example.zdroa.myapplication.ActivityNavigator;
 import com.example.zdroa.myapplication.R;
 import com.example.zdroa.myapplication.activities.main.HomeActivity;
-import com.example.zdroa.myapplication.activities.questionnaire.QuestionnaireActivity;
+import com.example.zdroa.myapplication.activities.personalityquestionnaire.QuestionnaireActivity;
 import com.example.zdroa.myapplication.handlers.AnimatorHandler;
 import com.example.zdroa.myapplication.handlers.LoadingSpinner;
 import com.example.zdroa.myapplication.handlers.UserSession;

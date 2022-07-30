@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 
 import com.example.zdroa.myapplication.activities.main.HomeActivity;
-import com.example.zdroa.myapplication.activities.questionnaire.QuestionnaireActivity;
+import com.example.zdroa.myapplication.activities.personalityquestionnaire.QuestionnaireActivity;
 import com.example.zdroa.myapplication.handlers.UserSession;
 import com.example.zdroa.myapplication.models.User;
 import com.example.zdroa.myapplication.utils.AppSettings;
@@ -41,7 +41,6 @@ public interface ActivityNavigator {
                     }
                 }
                 launchActivityWithFinish(activity, HomeActivity.class);
-                return;
             }
         } else {
             //testing purposes to skip login

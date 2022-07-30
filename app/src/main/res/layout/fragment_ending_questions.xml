@@ -5,7 +5,7 @@
     android:id="@+id/fragment_ending"
     android:background="@color/appBgColor"
     android:orientation="vertical"
-    tools:context=".activities.questionnaire.fragments.EndingQuestionsFragment">
+    tools:context=".activities.personalityquestionnaire.fragments.EndingQuestionsFragment">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/fragment_ending_main_card_view"

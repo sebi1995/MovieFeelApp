@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/appBgColor"
     android:orientation="vertical"
-    tools:context=".activities.questionnaire.fragments.InitializerFragment">
+    tools:context=".activities.personalityquestionnaire.fragments.InitializerFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

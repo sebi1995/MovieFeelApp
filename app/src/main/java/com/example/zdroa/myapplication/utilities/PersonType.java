@@ -16,6 +16,7 @@ import static com.example.zdroa.myapplication.utils.MovieGenre.THRILLER;
 import com.example.zdroa.myapplication.utils.MovieGenre;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public enum PersonType {
@@ -53,10 +54,6 @@ public enum PersonType {
             }
         }
         return null;
-    }
-
-    public static int numberOfTypes() {
-        return values().length;
     }
 
     public List<MovieGenre> getGenresToAvoid() {

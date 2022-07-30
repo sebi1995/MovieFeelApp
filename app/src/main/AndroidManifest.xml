@@ -36,7 +36,7 @@
             android:launchMode="singleInstance"
             android:screenOrientation="fullSensor" />
         <activity
-            android:name=".activities.questionnaire.QuestionnaireActivity"
+            android:name=".activities.personalityquestionnaire.QuestionnaireActivity"
             android:launchMode="singleInstance"
             android:screenOrientation="fullSensor" />
         <activity
